@@ -2,9 +2,9 @@ package ru.mypackage.demoproject.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.mypackage.demoproject.dto.LoginResponseDTO;
+import ru.mypackage.demoproject.dto.RegistrationDTO;
 import ru.mypackage.demoproject.models.ApplicationUser;
-import ru.mypackage.demoproject.models.dto.LoginResponseDTO;
-import ru.mypackage.demoproject.models.dto.RegistrationDTO;
 import ru.mypackage.demoproject.services.AuthenticationService;
 
 

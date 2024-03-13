@@ -1,39 +1,81 @@
 package ru.mypackage.demoproject.services;
 
-import lombok.AllArgsConstructor;
+import com.nimbusds.jwt.SignedJWT;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import ru.mypackage.demoproject.models.ApplicationUser;
+import ru.mypackage.demoproject.repository.UserRepository;
 
+import java.text.ParseException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TokenService {
 
-    private JwtEncoder jwtEncoder;
-    private JwtDecoder jwtDecoder;
+    private final JwtEncoder jwtEncoder;
+    private final UserRepository userRepository;
 
-    public String generateJwt(Authentication authentication) {
+    public String generateAccessToken(ApplicationUser user) {
         Instant now = Instant.now();
 
-        String scope = authentication.getAuthorities().stream()
+        String scope = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
-        JwtClaimsSet claimsSet = JwtClaimsSet.builder()
+        JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .subject(authentication.getName())
+                .expiresAt(now.plus(2, ChronoUnit.MINUTES))
+                .subject(user.getUsername())
                 .claim("roles", scope)
                 .build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+    public String generateRefreshToken(ApplicationUser user) {
+        Instant now = Instant.now();
+
+        String scope = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .expiresAt(now.plus(10, ChronoUnit.MINUTES))
+                .subject(user.getUsername())
+                .claim("roles", scope)
+                .build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    public Authentication validateToken(String token) {
+        String username = parseToken(token);
+
+        ApplicationUser user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user is not valid"));
+
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), null);
+    }
+
+    public String parseToken(String token) {
+        try {
+            SignedJWT decodedJWT = SignedJWT.parse(token);
+            String subject = decodedJWT.getJWTClaimsSet().getSubject();
+            return subject;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

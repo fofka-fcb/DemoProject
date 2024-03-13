@@ -1,15 +1,20 @@
 package ru.mypackage.demoproject.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@Setter
+@Getter
 public class ApplicationUser implements UserDetails {
 
     @Id
@@ -31,6 +36,9 @@ public class ApplicationUser implements UserDetails {
     )
     private Set<Role> authorities;
 
+    @OneToMany(mappedBy = "userId")
+    private List<Token> tokenList;
+
     public ApplicationUser() {
         super();
         this.authorities = new HashSet<Role>();
@@ -47,26 +55,15 @@ public class ApplicationUser implements UserDetails {
         return this.authorities;
     }
 
-    public void SetAuthorities(Set<Role> authorities) {
-        this.authorities = authorities;
-    }
 
     @Override
     public String getPassword() {
         return this.password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String getUsername() {
         return this.username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     @Override
