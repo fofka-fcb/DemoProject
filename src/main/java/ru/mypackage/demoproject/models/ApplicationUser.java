@@ -39,6 +39,9 @@ public class ApplicationUser implements UserDetails {
     @OneToMany(mappedBy = "userId")
     private List<Token> tokenList;
 
+    @OneToMany(mappedBy = "userId")
+    private List<Statement> statementList;
+
     public ApplicationUser() {
         super();
         this.authorities = new HashSet<Role>();
