@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.mypackage.demoproject.dto.CreateStatementDTO;
-import ru.mypackage.demoproject.responses.UserErrorResponse;
+import ru.mypackage.demoproject.dto.StatementsResponse;
+import ru.mypackage.demoproject.models.StatementType;
+import ru.mypackage.demoproject.dto.UserErrorResponse;
 import ru.mypackage.demoproject.services.StatementService;
 
 @RestController
@@ -22,20 +24,28 @@ public class UserController {
         return "hello User";
     }
 
-    @PostMapping("/sent")
-    public ResponseEntity<HttpStatus> createStatementAndSent(@RequestBody CreateStatementDTO body) {
+    @PostMapping("/create")
+    public ResponseEntity<HttpStatus> createStatement(@RequestBody CreateStatementDTO body) {
         statementService
-                .createSent(body.getUsername(), body.getStatement());
+                .create(body.getUsername(), body.getStatementType(), body.getStatement());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("/draft")
-    public ResponseEntity<HttpStatus> createStatementDraft(@RequestBody CreateStatementDTO body) {
-        statementService
-                .createDraft(body.getUsername(), body.getStatement());
-
-        return ResponseEntity.ok(HttpStatus.OK);
+    @GetMapping("/get")
+    public StatementsResponse getAllStatements(@RequestParam(value = "username") String username,
+                                           @RequestParam(value = "type") String type,
+                                           @RequestParam(value = "page", required = false) Integer page,
+                                           @RequestParam(value = "per_page", required = false) Integer draftsPerPage,
+                                           @RequestParam(value = "sort", required = false) boolean sortByDate,
+                                           @RequestParam(value = "desc", required = false) boolean sortByDesc) {
+        if (page == null || draftsPerPage == null) {
+            return new StatementsResponse(statementService.findAll(username, StatementType.valueOf(type)));
+        } else {
+            return new StatementsResponse(
+                    statementService.findWithPaginationAndSort(username, StatementType.valueOf(type),
+                            page, draftsPerPage, sortByDate, sortByDesc));
+        }
     }
 
     @ExceptionHandler

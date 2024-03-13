@@ -1,4 +1,4 @@
-package ru.mypackage.demoproject.responses;
+package ru.mypackage.demoproject.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
