@@ -34,7 +34,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.requestMatchers("/admin/**").hasRole("ADMIN");
-                    auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
+                    auth.requestMatchers("/operator/**").hasRole("OPERATOR");
+                    auth.requestMatchers("/user/**").hasRole("USER");
                     auth.anyRequest().authenticated();
                 });
 
@@ -50,7 +51,8 @@ public class SecurityConfiguration {
                 .logout(logout -> {
                             logout.logoutUrl("/auth/logout");
                             logout.addLogoutHandler(logoutHandler);
-                            logout.logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
+                            logout.logoutSuccessHandler((request, response, authentication)
+                                    -> SecurityContextHolder.clearContext());
                         }
 
                 );

@@ -3,6 +3,7 @@ package ru.mypackage.demoproject.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.mypackage.demoproject.dto.CreateStatementDTO;
@@ -33,12 +34,15 @@ public class UserController {
     }
 
     @GetMapping("/get")
-    public StatementsResponse getAllStatements(@RequestParam(value = "username") String username,
+    public StatementsResponse getAllStatements(
                                            @RequestParam(value = "type") String type,
                                            @RequestParam(value = "page", required = false) Integer page,
                                            @RequestParam(value = "per_page", required = false) Integer draftsPerPage,
                                            @RequestParam(value = "sort", required = false) boolean sortByDate,
                                            @RequestParam(value = "desc", required = false) boolean sortByDesc) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         if (page == null || draftsPerPage == null) {
             return new StatementsResponse(statementService.findAll(username, StatementType.valueOf(type)));
         } else {
@@ -46,7 +50,9 @@ public class UserController {
                     statementService.findWithPaginationAndSort(username, StatementType.valueOf(type),
                             page, draftsPerPage, sortByDate, sortByDesc));
         }
+
     }
+
 
     @ExceptionHandler
     private ResponseEntity<UserErrorResponse> handleException(UsernameNotFoundException e) {
