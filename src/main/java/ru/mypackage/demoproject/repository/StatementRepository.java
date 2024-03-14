@@ -7,10 +7,12 @@ import ru.mypackage.demoproject.models.Statement;
 import ru.mypackage.demoproject.models.StatementType;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StatementRepository extends JpaRepository<Statement, Integer> {
 
+    Optional<Statement> findByIdAndStatementType(Integer id, StatementType statementType);
     List<Statement> findAllByUserIdAndStatementType(Integer id, StatementType statementType);
     List<Statement> findAllByUserIdAndStatementType(Integer id, StatementType statementType, Pageable pageable);
 

@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.mypackage.demoproject.exceptions.AppException;
+import ru.mypackage.demoproject.exceptions.TokenExpiredException;
 import ru.mypackage.demoproject.repository.TokenRepository;
 import ru.mypackage.demoproject.services.TokenService;
 
@@ -47,7 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(tokenService.validateToken(token));
             } else {
                 SecurityContextHolder.clearContext();
-                throw new AppException("Token expired.", HttpStatus.UNAUTHORIZED);
+                throw new TokenExpiredException("Token expired.", HttpStatus.UNAUTHORIZED);
             }
 
         }

@@ -8,7 +8,6 @@ import ru.mypackage.demoproject.models.StatementType;
 @Setter
 public class CreateStatementDTO {
 
-    String username;
     StatementType statementType;
     String statement;
 

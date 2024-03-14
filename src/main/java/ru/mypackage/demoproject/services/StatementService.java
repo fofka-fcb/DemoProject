@@ -5,6 +5,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.mypackage.demoproject.dto.RefactorStatementDTO;
+import ru.mypackage.demoproject.dto.StatementDTO;
+import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
+import ru.mypackage.demoproject.exceptions.StatementSentException;
+import ru.mypackage.demoproject.exceptions.TypeOfStatementNotValidException;
 import ru.mypackage.demoproject.models.ApplicationUser;
 import ru.mypackage.demoproject.models.Statement;
 import ru.mypackage.demoproject.models.StatementType;
@@ -20,9 +25,22 @@ public class StatementService {
 
     private final StatementRepository statementRepository;
     private final UserRepository userRepository;
+    private final Integer draftsPerPage = 5;
 
-    public void create(String username, StatementType statementType, String statement) {
-        statementRepository.save(createStatement(username, statementType, statement));
+    public StatementType checkStatus(Integer id) {
+        return statementRepository.findById(id)
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"))
+                .getStatementType();
+    }
+
+    public StatementDTO findOne(Integer id, StatementType statementType) {
+
+        Statement statement = statementRepository.findByIdAndStatementType(id, statementType)
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+
+        return new StatementDTO(statement.getId(), statement.getStatementType(),
+                statement.getCreateAt(), statement.getStatement());
+
     }
 
     public List<Statement> findAll(String username, StatementType statementType) {
@@ -31,12 +49,11 @@ public class StatementService {
         return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType);
     }
 
-    public List<Statement> findWithPaginationAndSort(String username,
-                                                     StatementType statementType,
-                                                     Integer page,
-                                                     Integer draftsPerPage,
-                                                     Boolean sortByData,
-                                                     Boolean sortByDesc) {
+    public List<Statement> findAllWithPaginationAndSort(String username,
+                                                        StatementType statementType,
+                                                        Integer page,
+                                                        Boolean sortByData,
+                                                        Boolean sortByDesc) {
         ApplicationUser user = findUser(username);
 
         if (sortByData && sortByDesc) {
@@ -54,7 +71,35 @@ public class StatementService {
 
     }
 
-    private Statement createStatement(String username, StatementType statementType, String statement) {
+    public void create(String username, StatementType statementType, String statement) {
+        statementRepository.save(mapStatement(username, statementType, statement));
+    }
+
+    public void sentStatementFromDrafts(Integer id) {
+        Statement statement =statementRepository.findById(id)
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+
+        if (statement.getStatementType().equals(StatementType.DRAFT)) {
+            statement.setStatementType(StatementType.SENT);
+            statementRepository.save(statement);
+        } else {
+            throw new StatementSentException("Statement has already been sent!");
+        }
+    }
+
+    public void refactor(RefactorStatementDTO refStatementDTO) {
+        Statement refStatement = statementRepository.findById(refStatementDTO.getId())
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+
+        if (refStatement.getStatementType().equals(StatementType.DRAFT)) {
+            refStatement.setStatement(refStatementDTO.getStatement());
+            statementRepository.save(refStatement);
+        } else {
+            throw new TypeOfStatementNotValidException("Statement type is not valid!");
+        }
+    }
+
+    private Statement mapStatement(String username, StatementType statementType, String statement) {
         ApplicationUser user = findUser(username);
 
         Statement createdStatement = new Statement();
@@ -67,6 +112,7 @@ public class StatementService {
     }
 
     private ApplicationUser findUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
     }
 }

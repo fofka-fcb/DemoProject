@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import ru.mypackage.demoproject.dto.CreateStatementDTO;
-import ru.mypackage.demoproject.dto.StatementsResponse;
+import ru.mypackage.demoproject.dto.*;
+import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
+import ru.mypackage.demoproject.exceptions.StatementSentException;
+import ru.mypackage.demoproject.exceptions.TypeOfStatementNotValidException;
 import ru.mypackage.demoproject.models.StatementType;
-import ru.mypackage.demoproject.dto.UserErrorResponse;
 import ru.mypackage.demoproject.services.StatementService;
 
 @RestController
@@ -20,39 +21,92 @@ public class UserController {
 
     private final StatementService statementService;
 
-    @GetMapping("/")
-    public String helloUser() {
-        return "hello User";
+    @GetMapping("/get")
+    public ResponseEntity<StatementDTO> getOneById(@RequestParam(value = "id") Integer id,
+                                                   @RequestParam(value = "type") String type) {
+
+        return new ResponseEntity<>(statementService.findOne(id, StatementType.valueOf(type)), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/get/all")
+    public StatementsResponse getAllStatements(
+            @RequestParam(value = "type") String type,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "sort", required = false) boolean sortByDate,
+            @RequestParam(value = "desc", required = false) boolean sortByDesc) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (page == null) {
+            return new StatementsResponse(statementService.findAll(username, StatementType.valueOf(type)));
+        } else {
+            return new StatementsResponse(
+                    statementService.findAllWithPaginationAndSort(username, StatementType.valueOf(type),
+                            page, sortByDate, sortByDesc));
+        }
+    }
+
+    @GetMapping("/check_status")
+    public ResponseEntity<StatementType> checkStatus(@RequestParam(value="id") Integer id) {
+
+        return new ResponseEntity<>(statementService.checkStatus(id), HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<HttpStatus> createStatement(@RequestBody CreateStatementDTO body) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         statementService
-                .create(body.getUsername(), body.getStatementType(), body.getStatement());
+                .create(username, body.getStatementType(), body.getStatement());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/get")
-    public StatementsResponse getAllStatements(
-                                           @RequestParam(value = "type") String type,
-                                           @RequestParam(value = "page", required = false) Integer page,
-                                           @RequestParam(value = "per_page", required = false) Integer draftsPerPage,
-                                           @RequestParam(value = "sort", required = false) boolean sortByDate,
-                                           @RequestParam(value = "desc", required = false) boolean sortByDesc) {
+    @PostMapping("sent")
+    public ResponseEntity<HttpStatus> sentDraft(@RequestParam(value = "id") Integer id) {
+        statementService.sentStatementFromDrafts(id);
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        if (page == null || draftsPerPage == null) {
-            return new StatementsResponse(statementService.findAll(username, StatementType.valueOf(type)));
-        } else {
-            return new StatementsResponse(
-                    statementService.findWithPaginationAndSort(username, StatementType.valueOf(type),
-                            page, draftsPerPage, sortByDate, sortByDesc));
-        }
-
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @PostMapping("/refactor/draft")
+    public ResponseEntity<HttpStatus> refactorDraft(@RequestBody RefactorStatementDTO refStatementDTO) {
+        statementService.refactor(refStatementDTO);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @ExceptionHandler
+    ResponseEntity<StatementErrorResponse> handleException(TypeOfStatementNotValidException e) {
+        StatementErrorResponse response = new StatementErrorResponse(
+                "You can't refactor/delete sent statements!",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.LOCKED);
+    }
+
+    @ExceptionHandler
+    ResponseEntity<StatementErrorResponse> handleException(StatementSentException e) {
+        StatementErrorResponse response = new StatementErrorResponse(
+                "This statement has already been sent!",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.LOCKED);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<StatementErrorResponse> handleException(StatementNotFoundException e) {
+        StatementErrorResponse response = new StatementErrorResponse(
+                "Statement with this 'id' wasn't found!",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler
     private ResponseEntity<UserErrorResponse> handleException(UsernameNotFoundException e) {
