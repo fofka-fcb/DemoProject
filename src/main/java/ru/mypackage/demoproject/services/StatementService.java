@@ -6,7 +6,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.mypackage.demoproject.dto.RefactorStatementDTO;
-import ru.mypackage.demoproject.dto.StatementDTO;
 import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
 import ru.mypackage.demoproject.exceptions.StatementSentException;
 import ru.mypackage.demoproject.exceptions.TypeOfStatementNotValidException;
@@ -25,26 +24,26 @@ public class StatementService {
 
     private final StatementRepository statementRepository;
     private final UserRepository userRepository;
-    private final Integer draftsPerPage = 5;
+    private final Integer perPage = 5;
 
     public StatementType checkStatus(Integer id) {
-        return statementRepository.findById(id)
-                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"))
-                .getStatementType();
+        return findByIdFromRepo(id).getStatementType();
     }
 
-    public StatementDTO findOne(Integer id, StatementType statementType) {
-
-        Statement statement = statementRepository.findByIdAndStatementType(id, statementType)
-                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
-
-        return new StatementDTO(statement.getId(), statement.getStatementType(),
-                statement.getCreateAt(), statement.getStatement());
-
+    public Statement findOne(Integer id, StatementType statementType) {
+        return findByIdAndStatementTypeFromRepo(id, statementType);
     }
 
-    public List<Statement> findAll(String username, StatementType statementType) {
-        ApplicationUser user = findUser(username);
+    public List<Statement> findAllStatementsByType(StatementType statementType) {
+        return statementRepository.findAllByStatementType(statementType);
+    }
+
+    public List<Statement> findAllSentStatements() {
+        return statementRepository.findAllByStatementType(StatementType.SENT);
+    }
+
+    public List<Statement> findAllByUsername(String username, StatementType statementType) {
+        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
         return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType);
     }
@@ -54,19 +53,26 @@ public class StatementService {
                                                         Integer page,
                                                         Boolean sortByData,
                                                         Boolean sortByDesc) {
-        ApplicationUser user = findUser(username);
 
-        if (sortByData && sortByDesc) {
+        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
+
+        if ((page == null)) {
+            return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType);
+
+        } else if (sortByData && sortByDesc) {
             return statementRepository
                     .findAllByUserIdAndStatementType(user.getId(), statementType,
-                            PageRequest.of(page, draftsPerPage, Sort.by("createAt").descending()));
+                            PageRequest.of(page, perPage, Sort.by("createAt").descending()));
+
         } else if (sortByData) {
             return statementRepository
                     .findAllByUserIdAndStatementType(user.getId(), statementType,
-                            PageRequest.of(page, draftsPerPage, Sort.by("createAt")));
+                            PageRequest.of(page, perPage, Sort.by("createAt")));
+
         } else {
             return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType,
-                    PageRequest.of(page, draftsPerPage));
+                    PageRequest.of(page, perPage));
+
         }
 
     }
@@ -76,8 +82,7 @@ public class StatementService {
     }
 
     public void sentStatementFromDrafts(Integer id) {
-        Statement statement =statementRepository.findById(id)
-                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+        Statement statement = findByIdFromRepo(id);
 
         if (statement.getStatementType().equals(StatementType.DRAFT)) {
             statement.setStatementType(StatementType.SENT);
@@ -87,9 +92,22 @@ public class StatementService {
         }
     }
 
+    public void acceptSentStatement(Integer id) {
+        Statement statement = findByIdAndStatementTypeFromRepo(id, StatementType.SENT);
+
+        statement.setStatementType(StatementType.ACCEPT);
+        statementRepository.save(statement);
+    }
+
+    public void rejectSentStatement(Integer id) {
+        Statement statement = findByIdAndStatementTypeFromRepo(id, StatementType.SENT);
+
+        statement.setStatementType(StatementType.REJECT);
+        statementRepository.save(statement);
+    }
+
     public void refactor(RefactorStatementDTO refStatementDTO) {
-        Statement refStatement = statementRepository.findById(refStatementDTO.getId())
-                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+        Statement refStatement = findByIdFromRepo(refStatementDTO.getId());
 
         if (refStatement.getStatementType().equals(StatementType.DRAFT)) {
             refStatement.setStatement(refStatementDTO.getStatement());
@@ -100,7 +118,7 @@ public class StatementService {
     }
 
     private Statement mapStatement(String username, StatementType statementType, String statement) {
-        ApplicationUser user = findUser(username);
+        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
         Statement createdStatement = new Statement();
         createdStatement.setUserId(user.getId());
@@ -111,8 +129,19 @@ public class StatementService {
         return createdStatement;
     }
 
-    private ApplicationUser findUser(String username) {
-        return userRepository.findByUsername(username)
+    private Statement findByIdFromRepo(Integer id) {
+        return statementRepository.findById(id)
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+    }
+
+    private Statement findByIdAndStatementTypeFromRepo(Integer id, StatementType statementType) {
+        return statementRepository.findByIdAndStatementType(id, statementType)
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
+    }
+
+    private ApplicationUser findUserFromRepoByUsernameStartingWith(String username) {
+        return userRepository.findByUsernameStartingWith(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
     }
+
 }

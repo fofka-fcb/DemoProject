@@ -10,6 +10,7 @@ import ru.mypackage.demoproject.dto.*;
 import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
 import ru.mypackage.demoproject.exceptions.StatementSentException;
 import ru.mypackage.demoproject.exceptions.TypeOfStatementNotValidException;
+import ru.mypackage.demoproject.models.Statement;
 import ru.mypackage.demoproject.models.StatementType;
 import ru.mypackage.demoproject.services.StatementService;
 
@@ -22,11 +23,10 @@ public class UserController {
     private final StatementService statementService;
 
     @GetMapping("/get")
-    public ResponseEntity<StatementDTO> getOneById(@RequestParam(value = "id") Integer id,
-                                                   @RequestParam(value = "type") String type) {
+    public ResponseEntity<Statement> getOneById(@RequestParam(value = "id") Integer id,
+                                                @RequestParam(value = "type") String type) {
 
         return new ResponseEntity<>(statementService.findOne(id, StatementType.valueOf(type)), HttpStatus.OK);
-
     }
 
     @GetMapping("/get/all")
@@ -39,7 +39,7 @@ public class UserController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (page == null) {
-            return new StatementsResponse(statementService.findAll(username, StatementType.valueOf(type)));
+            return new StatementsResponse(statementService.findAllByUsername(username, StatementType.valueOf(type)));
         } else {
             return new StatementsResponse(
                     statementService.findAllWithPaginationAndSort(username, StatementType.valueOf(type),
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/check_status")
-    public ResponseEntity<StatementType> checkStatus(@RequestParam(value="id") Integer id) {
+    public ResponseEntity<StatementType> checkStatus(@RequestParam(value = "id") Integer id) {
 
         return new ResponseEntity<>(statementService.checkStatus(id), HttpStatus.OK);
     }

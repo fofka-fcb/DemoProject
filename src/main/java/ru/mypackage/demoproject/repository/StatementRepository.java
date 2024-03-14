@@ -15,5 +15,6 @@ public interface StatementRepository extends JpaRepository<Statement, Integer> {
     Optional<Statement> findByIdAndStatementType(Integer id, StatementType statementType);
     List<Statement> findAllByUserIdAndStatementType(Integer id, StatementType statementType);
     List<Statement> findAllByUserIdAndStatementType(Integer id, StatementType statementType, Pageable pageable);
+    List<Statement> findAllByStatementType(StatementType statementType);
 
 }

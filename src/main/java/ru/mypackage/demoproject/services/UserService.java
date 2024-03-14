@@ -1,25 +1,65 @@
 package ru.mypackage.demoproject.services;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.jpa.EntityManagerHolder;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.mypackage.demoproject.dto.UserDTO;
+import ru.mypackage.demoproject.models.ApplicationUser;
+import ru.mypackage.demoproject.models.Role;
+import ru.mypackage.demoproject.models.UserRoleJunction;
+import ru.mypackage.demoproject.repository.RoleRepository;
 import ru.mypackage.demoproject.repository.UserRepository;
+import ru.mypackage.demoproject.repository.UserRoleJunctionRepository;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
-    private final PasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final UserRoleJunctionRepository junctionRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("In the user detail service");
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAllUsers() {
+        List<ApplicationUser> applicationUserList = userRepository.findAll();
+        List<UserDTO> userDTOList = new ArrayList<>();
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user is not valid"));
+        applicationUserList.forEach((u) -> {
+            userDTOList.add(mapUserDTO(u));
+        });
+
+        return userDTOList;
+    }
+
+    public void setOperator(String username) {
+        ApplicationUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
+
+        Role role = roleRepository.findByAuthority("OPERATOR").orElseThrow();
+
+        UserRoleJunction userRoleJunction = junctionRepository.findUserRoleJunctionByUser(user);
+
+        junctionRepository.delete(userRoleJunction);
+
+        userRoleJunction.setUser(user);
+        userRoleJunction.setRole(role);
+
+        junctionRepository.save(userRoleJunction);
+
+    }
+
+    private UserDTO mapUserDTO(ApplicationUser user) {
+        return new UserDTO(user.getId(), user.getUsername());
     }
 
 }
