@@ -8,10 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.LoginResponseDTO;
-import ru.mypackage.demoproject.models.ApplicationUser;
-import ru.mypackage.demoproject.models.Role;
-import ru.mypackage.demoproject.models.Token;
-import ru.mypackage.demoproject.models.TokenType;
+import ru.mypackage.demoproject.models.*;
+import ru.mypackage.demoproject.repository.PhoneRepository;
 import ru.mypackage.demoproject.repository.RoleRepository;
 import ru.mypackage.demoproject.repository.TokenRepository;
 import ru.mypackage.demoproject.repository.UserRepository;
@@ -28,18 +26,29 @@ public class AuthenticationService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private TokenRepository tokenRepository;
+    private PhoneRepository phoneRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
     private TokenService tokenService;
+    private DaDataService daDataService;
 
-    public ApplicationUser registerUser(String username, String password) {
+    public ApplicationUser registerUser(String username, String password, String phoneNumber) {
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
 
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
 
-        return userRepository.save(new ApplicationUser(username, encodedPassword, authorities));
+        Phone phone = daDataService.checkPhone(phoneNumber);
+
+        ApplicationUser applicationUser = new ApplicationUser(username, encodedPassword, authorities);
+
+        phone.setUser(applicationUser);
+        applicationUser.setPhone(phone);
+
+        userRepository.save(applicationUser);
+
+        return userRepository.save(applicationUser);
     }
 
     public LoginResponseDTO loginUser(String username, String password) {

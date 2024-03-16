@@ -3,6 +3,7 @@ package ru.mypackage.demoproject.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -42,6 +43,10 @@ public class ApplicationUser implements UserDetails {
     @OneToMany(mappedBy = "userId")
     private List<Statement> statementList;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private Phone phone;
+
     public ApplicationUser() {
         super();
         this.authorities = new HashSet<Role>();
@@ -52,6 +57,14 @@ public class ApplicationUser implements UserDetails {
         this.password = password;
         this.authorities = authorities;
     }
+
+    public ApplicationUser(String username, String password, Set<Role> authorities, Phone phone) {
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
+        this.phone = phone;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -29,6 +29,7 @@ public class Token {
     @Column(name = "id_of_user")
     @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
     private Integer userId;
+
     public Token() {
     }
 

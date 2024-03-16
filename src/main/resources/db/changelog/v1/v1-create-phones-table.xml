@@ -1,0 +1,31 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+
+    <changeSet author="self" id="v1-5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="phones"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="phones">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="phones_pkey"/>
+            </column>
+            <column name="id_of_user" type="INTEGER"/>
+            <column name="type" type="VARCHAR"/>
+            <column name="phone" type="VARCHAR"/>
+            <column name="country_code" type="INTEGER"/>
+            <column name="city_code" type="INTEGER"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="id_of_user" baseTableName="phones"
+                                 constraintName="phones_id_of_user_fkey" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>
