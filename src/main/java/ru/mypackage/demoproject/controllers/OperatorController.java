@@ -61,24 +61,4 @@ public class OperatorController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @ExceptionHandler
-    private ResponseEntity<StatementErrorResponse> handleException(StatementNotFoundException e) {
-        StatementErrorResponse response = new StatementErrorResponse(
-                "Statement with this 'id' wasn't found!",
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<UserErrorResponse> handleException(UsernameNotFoundException e) {
-        UserErrorResponse response = new UserErrorResponse(
-                "Username is not valid!",
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
 }

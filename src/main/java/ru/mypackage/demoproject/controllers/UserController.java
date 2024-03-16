@@ -64,7 +64,7 @@ public class UserController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("sent")
+    @PostMapping("/sent")
     public ResponseEntity<HttpStatus> sentDraft(@RequestParam(value = "id") Integer id) {
         statementService.sentStatementFromDrafts(id);
 
@@ -76,46 +76,6 @@ public class UserController {
         statementService.refactor(refStatementDTO);
 
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    @ExceptionHandler
-    ResponseEntity<StatementErrorResponse> handleException(TypeOfStatementNotValidException e) {
-        StatementErrorResponse response = new StatementErrorResponse(
-                "You can't refactor/delete sent statements!",
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.LOCKED);
-    }
-
-    @ExceptionHandler
-    ResponseEntity<StatementErrorResponse> handleException(StatementSentException e) {
-        StatementErrorResponse response = new StatementErrorResponse(
-                "This statement has already been sent!",
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.LOCKED);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<StatementErrorResponse> handleException(StatementNotFoundException e) {
-        StatementErrorResponse response = new StatementErrorResponse(
-                "Statement with this 'id' wasn't found!",
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<UserErrorResponse> handleException(UsernameNotFoundException e) {
-        UserErrorResponse response = new UserErrorResponse(
-                "Username is not valid!",
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
 }
