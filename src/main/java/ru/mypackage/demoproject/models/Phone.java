@@ -13,7 +13,7 @@ public class Phone {
     @Column(name = "id")
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
     private ApplicationUser user;
 

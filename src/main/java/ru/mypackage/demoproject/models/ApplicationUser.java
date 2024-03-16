@@ -37,7 +37,7 @@ public class ApplicationUser implements UserDetails {
     )
     private Set<Role> authorities;
 
-    @OneToMany(mappedBy = "userId")
+    @OneToMany(mappedBy = "user")
     private List<Token> tokenList;
 
     @OneToMany(mappedBy = "userId")

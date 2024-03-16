@@ -26,16 +26,16 @@ public class Token {
     @Column(name = "type")
     private TokenType tokenType = TokenType.BEARER;
 
-    @Column(name = "id_of_user")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
-    private Integer userId;
+    private ApplicationUser user;
 
     public Token() {
     }
 
-    public Token(String token, boolean expired, Integer userId) {
+    public Token(String token, boolean expired, ApplicationUser user) {
         this.token = token;
         this.expired = expired;
-        this.userId = userId;
+        this.user = user;
     }
 }

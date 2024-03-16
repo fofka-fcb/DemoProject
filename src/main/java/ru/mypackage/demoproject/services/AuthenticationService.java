@@ -68,7 +68,7 @@ public class AuthenticationService {
 
     private void saveUserToken(ApplicationUser user, String jwtToken) {
         Token token = new Token();
-        token.setUserId(user.getId());
+        token.setUser(user);
         token.setTokenType(TokenType.BEARER);
         token.setToken(jwtToken);
         token.setExpired(false);
