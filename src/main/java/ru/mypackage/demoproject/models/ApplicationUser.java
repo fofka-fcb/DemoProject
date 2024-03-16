@@ -40,7 +40,7 @@ public class ApplicationUser implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokenList;
 
-    @OneToMany(mappedBy = "userId")
+    @OneToMany(mappedBy = "user")
     private List<Statement> statementList;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)

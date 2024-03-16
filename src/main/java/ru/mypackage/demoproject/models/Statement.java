@@ -1,13 +1,9 @@
 package ru.mypackage.demoproject.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "statements")
 public class Statement {
@@ -17,9 +13,9 @@ public class Statement {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "id_of_user")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
-    private Integer userId;
+    private ApplicationUser user;
 
     @Column(name = "statement")
     private String statement;
@@ -32,4 +28,35 @@ public class Statement {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt;
 
+    public Integer getUser() {
+        return user.getId();
+    }
+
+    public void setUser(ApplicationUser user) {
+        this.user = user;
+    }
+
+    public String getStatement() {
+        return statement;
+    }
+
+    public void setStatement(String statement) {
+        this.statement = statement;
+    }
+
+    public StatementType getStatementType() {
+        return statementType;
+    }
+
+    public void setStatementType(StatementType statementType) {
+        this.statementType = statementType;
+    }
+
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
 }

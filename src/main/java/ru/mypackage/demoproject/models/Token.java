@@ -2,13 +2,9 @@ package ru.mypackage.demoproject.models;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "token")
-@Getter
-@Setter
 public class Token {
 
     @Id
@@ -36,6 +32,38 @@ public class Token {
     public Token(String token, boolean expired, ApplicationUser user) {
         this.token = token;
         this.expired = expired;
+        this.user = user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Boolean getExpired() {
+        return expired;
+    }
+
+    public void setExpired(Boolean expired) {
+        this.expired = expired;
+    }
+
+    public TokenType getTokenType() {
+        return tokenType;
+    }
+
+    public void setTokenType(TokenType tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public Integer getUser() {
+        return user.getId();
+    }
+
+    public void setUser(ApplicationUser user) {
         this.user = user;
     }
 }

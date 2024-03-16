@@ -45,7 +45,7 @@ public class StatementService {
     public List<Statement> findAllByUsername(String username, StatementType statementType) {
         ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
-        return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType);
+        return statementRepository.findAllByUserAndStatementType(user, statementType);
     }
 
     public List<Statement> findAllWithPaginationAndSort(String username,
@@ -57,20 +57,20 @@ public class StatementService {
         ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
         if ((page == null)) {
-            return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType);
+            return statementRepository.findAllByUserAndStatementType(user, statementType);
 
         } else if (sortByData && sortByDesc) {
             return statementRepository
-                    .findAllByUserIdAndStatementType(user.getId(), statementType,
+                    .findAllByUserAndStatementType(user, statementType,
                             PageRequest.of(page, perPage, Sort.by("createAt").descending()));
 
         } else if (sortByData) {
             return statementRepository
-                    .findAllByUserIdAndStatementType(user.getId(), statementType,
+                    .findAllByUserAndStatementType(user, statementType,
                             PageRequest.of(page, perPage, Sort.by("createAt")));
 
         } else {
-            return statementRepository.findAllByUserIdAndStatementType(user.getId(), statementType,
+            return statementRepository.findAllByUserAndStatementType(user, statementType,
                     PageRequest.of(page, perPage));
 
         }
@@ -121,7 +121,7 @@ public class StatementService {
         ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
         Statement createdStatement = new Statement();
-        createdStatement.setUserId(user.getId());
+        createdStatement.setUser(user);
         createdStatement.setStatement(statement);
         createdStatement.setStatementType(statementType);
         createdStatement.setCreateAt(new Date());
