@@ -1,12 +1,18 @@
 package ru.mypackage.demoproject.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import ru.mypackage.demoproject.dto.LoginDTO;
-import ru.mypackage.demoproject.dto.LoginResponseDTO;
-import ru.mypackage.demoproject.dto.RegisterResponseDTO;
-import ru.mypackage.demoproject.dto.RegistrationDTO;
+import ru.mypackage.demoproject.dto.*;
+import ru.mypackage.demoproject.exceptions.UserNotRegisterException;
 import ru.mypackage.demoproject.services.AuthenticationService;
+import ru.mypackage.demoproject.utils.UserValidator;
+
+import java.util.List;
 
 
 @RestController
@@ -15,14 +21,20 @@ import ru.mypackage.demoproject.services.AuthenticationService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final UserValidator userValidator;
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(AuthenticationService authenticationService, UserValidator userValidator) {
         this.authenticationService = authenticationService;
+        this.userValidator = userValidator;
     }
 
     @PostMapping("/register")
-    public RegisterResponseDTO registerUser(@RequestBody RegistrationDTO body) {
+    public RegisterResponseDTO registerUser(@RequestBody @Valid RegistrationDTO body, BindingResult bindingResult) {
+        userValidator.validate(body, bindingResult);
+
+        if (bindingResult.hasErrors()) throw new UserNotRegisterException(bindingResult);
+
         return authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getPhone());
     }
 
