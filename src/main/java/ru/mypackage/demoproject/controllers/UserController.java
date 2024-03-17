@@ -47,7 +47,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/check_status")
+    @GetMapping("/check/status")
     public ResponseEntity<StatementType> checkStatus(@RequestParam(value = "id") Integer id) {
 
         return new ResponseEntity<>(statementService.checkStatus(id), HttpStatus.OK);

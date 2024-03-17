@@ -12,10 +12,10 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponseDTO {
+public class RegisterResponseDTO {
 
     private String username;
+    private String password;
     private Set<Role> authorities;
-    private String jwt;
 
 }

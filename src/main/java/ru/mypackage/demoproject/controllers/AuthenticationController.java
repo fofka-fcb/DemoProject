@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.mypackage.demoproject.dto.LoginDTO;
 import ru.mypackage.demoproject.dto.LoginResponseDTO;
+import ru.mypackage.demoproject.dto.RegisterResponseDTO;
 import ru.mypackage.demoproject.dto.RegistrationDTO;
 import ru.mypackage.demoproject.models.ApplicationUser;
 import ru.mypackage.demoproject.services.AuthenticationService;
@@ -18,7 +19,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ApplicationUser registerUser(@RequestBody RegistrationDTO body) {
+    public RegisterResponseDTO registerUser(@RequestBody RegistrationDTO body) {
         return authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getPhone());
     }
 

@@ -1,6 +1,7 @@
 package ru.mypackage.demoproject.services;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -8,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.LoginResponseDTO;
+import ru.mypackage.demoproject.dto.RegisterResponseDTO;
 import ru.mypackage.demoproject.models.*;
 import ru.mypackage.demoproject.repository.PhoneRepository;
 import ru.mypackage.demoproject.repository.RoleRepository;
@@ -20,19 +22,20 @@ import java.util.Set;
 
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthenticationService {
 
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private TokenRepository tokenRepository;
-    private PhoneRepository phoneRepository;
-    private PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private TokenService tokenService;
-    private DaDataService daDataService;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final TokenRepository tokenRepository;
+    private final PhoneRepository phoneRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
+    private final DaDataService daDataService;
 
-    public ApplicationUser registerUser(String username, String password, String phoneNumber) {
+    public RegisterResponseDTO registerUser(String username, String password, String phoneNumber) {
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
 
@@ -48,7 +51,7 @@ public class AuthenticationService {
 
         userRepository.save(applicationUser);
 
-        return userRepository.save(applicationUser);
+        return convertToRegisterResponseDTO(applicationUser);
     }
 
     public LoginResponseDTO loginUser(String username, String password) {
@@ -87,6 +90,14 @@ public class AuthenticationService {
         }
 
         tokenRepository.saveAll(tokenList);
+    }
+
+    private RegisterResponseDTO convertToRegisterResponseDTO(ApplicationUser user) {
+        return modelMapper.map(user, RegisterResponseDTO.class);
+    }
+
+    private ApplicationUser convertToApplicationUser(RegisterResponseDTO reg) {
+        return modelMapper.map(reg, ApplicationUser.class);
     }
 
 }

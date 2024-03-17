@@ -1,4 +1,4 @@
-package ru.mypackage.demoproject.configuration;
+package ru.mypackage.demoproject.configuration.security;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
