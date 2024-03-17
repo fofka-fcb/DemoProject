@@ -34,26 +34,15 @@ public class AdminController {
             @RequestParam(value = "type") String type,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "sort", required = false) boolean sortByDate,
             @RequestParam(value = "desc", required = false) boolean sortByDesc
     ) {
-        StatementsResponse statementsResponse;
-
-        if (username == null && page == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllStatementsByType(StatementType.valueOf(type), page,
-                            sortByDate, sortByDesc));
-
-        else if (page == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllByUsernameAndType(username, StatementType.valueOf(type),
-                            sortByDate, sortByDesc));
-
-        else
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllWithAllParameters(username, StatementType.valueOf(type),
-                            page, sortByDate, sortByDesc));
-
+        StatementsResponse statementsResponse = new StatementsResponse(
+                statementService.findAllStatementsByUserAndStatementType(
+                        username,
+                        type,
+                        page,
+                        sortByDesc)
+        );
 
         return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
     }

@@ -23,8 +23,8 @@ public class DaDataService {
         json = StringUtils.substring(json, 1, json.length() - 1);
 
         Phone phone = new Gson().fromJson(json, Phone.class);
-
-        return phone;
+        if (phone.getType().equals("Мобильный")) return phone;
+        else return null;
     }
 
 }

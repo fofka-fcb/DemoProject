@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.models.ApplicationUser;
 import ru.mypackage.demoproject.repository.UserRepository;
 
@@ -19,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class TokenService {
 
     private final JwtEncoder jwtEncoder;

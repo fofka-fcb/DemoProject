@@ -32,40 +32,20 @@ public class UserController {
     }
 
     //Метод для просмотра всех заявок
-    //Пока слишком много кода
     @GetMapping("/get/all")
     public ResponseEntity<StatementsResponse> getAllStatements(
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "sort", required = false) boolean sortByDate,
             @RequestParam(value = "desc", required = false) boolean sortByDesc) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        StatementsResponse statementsResponse;
-
-        if (type == null && page == null && !sortByDate)
-            statementsResponse = new StatementsResponse(statementService.findAllByUsername(username));
-
-        else if (page == null && type == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllByUsernameWithSorting(username, sortByDate, sortByDesc));
-
-        else if (page == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllByUsernameAndType(username, StatementType.valueOf(type),
-                            sortByDate, sortByDesc));
-
-        else if (type == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllByUsernameAndPagination(username, page,
-                            sortByDate, sortByDesc));
-
-        else
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllWithAllParameters(username, StatementType.valueOf(type),
-                            page, sortByDate, sortByDesc));
-
+        StatementsResponse statementsResponse = new StatementsResponse(
+                statementService.findAllStatementsByUserAndStatementType(
+                        username,
+                        type,
+                        page, sortByDesc)
+        );
 
         return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
     }

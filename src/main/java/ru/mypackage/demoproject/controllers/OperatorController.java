@@ -30,25 +30,15 @@ public class OperatorController {
     public ResponseEntity<StatementsResponse> getAllSentStatements(
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "sort", required = false) boolean sortByDate,
             @RequestParam(value = "desc", required = false) boolean sortByDesc) {
 
-        StatementsResponse statementsResponse;
-
-        if (username == null && page == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllSentStatements(sortByDate, sortByDesc));
-        else if (page == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllByUsernameAndType(username, StatementType.SENT,
-                            sortByDate, sortByDesc));
-        else if (username == null)
-            statementsResponse = new StatementsResponse(statementService
-                    .findAllStatementsByType(StatementType.SENT, page, sortByDate, sortByDesc));
-
-        else statementsResponse = new StatementsResponse(statementService
-                    .findAllWithAllParameters(username, StatementType.SENT,
-                            page, sortByDate, sortByDesc));
+        StatementsResponse statementsResponse = new StatementsResponse(
+                statementService.findAllStatementsByUserAndStatementType(
+                        username,
+                        "SENT",
+                        page,
+                        sortByDesc)
+        );
 
         return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
     }

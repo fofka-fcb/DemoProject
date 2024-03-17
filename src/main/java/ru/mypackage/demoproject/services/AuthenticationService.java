@@ -58,8 +58,10 @@ public class AuthenticationService {
 
         ApplicationUser applicationUser = new ApplicationUser(username, encodedPassword, authorities);
 
-        phone.setUser(applicationUser);
-        applicationUser.setPhone(phone);
+        if (phone != null) {
+            phone.setUser(applicationUser);
+            applicationUser.setPhone(phone);
+        }
 
         userRepository.save(applicationUser);
 
@@ -71,8 +73,8 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        ApplicationUser user = userRepository.findByUsername(username).get(); ///!!!!
-        String access_token = tokenService.generateAccessToken(user); //!!!!
+        ApplicationUser user = userRepository.findByUsername(username).get();
+        String access_token = tokenService.generateAccessToken(user);
 
         revokeAllUserTokens(user);
         saveUserToken(user, access_token);

@@ -20,26 +20,6 @@ public interface StatementRepository extends JpaRepository<Statement, Integer> {
     List<Statement> findAllByUser(ApplicationUser user, Sort sort);
     List<Statement> findAllByUser(ApplicationUser user, Pageable pageable);
 
-//    @Query("SELECT s FROM Statement s WHERE s.statementType = :statementType ORDER BY s.createAt")
-//    List<Statement> findAllByStatementTypeAndSortingASC(@Param("statementType") StatementType statementType);
-//
-//    @Query("SELECT s FROM Statement s WHERE s.statementType = :statementType ORDER BY s.createAt DESC")
-//    List<Statement> findAllByStatementTypeAndSortingDESC(@Param("statementType") StatementType statementType);
-
-//    @Query("SELECT s FROM Statement s WHERE s.user = :user ORDER BY s.createAt")
-//    List<Statement> findAllByUserAndSortingASC(@Param("user") ApplicationUser user);
-//
-//    @Query("SELECT s FROM Statement s WHERE s.user = :user ORDER BY s.createAt DESC ")
-//    List<Statement> findAllByUserAndSortingDESC(@Param("user") ApplicationUser user);
-
-//    @Query("SELECT s FROM Statement s WHERE s.user = :user AND s.statementType = :statementType ORDER BY s.createAt")
-//    List<Statement> findAllByUserAndStatementTypeWithSortingASC(@Param("user")ApplicationUser user,
-//                                                                @Param("statementType") StatementType statementType);
-//
-//    @Query("SELECT s FROM Statement s WHERE s.user = :user AND s.statementType = :statementType ORDER BY s.createAt DESC")
-//    List<Statement> findAllByUserAndStatementTypeWithSortingDESC(@Param("user") ApplicationUser user,
-//                                                                 @Param("statementType") StatementType statementType);
-
     Optional<Statement> findByIdAndStatementType(Integer id, StatementType statementType);
     Optional<Statement> findByIdAndUser(Integer id, ApplicationUser user);
 

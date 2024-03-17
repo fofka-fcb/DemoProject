@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.RefactorStatementDTO;
 import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
 import ru.mypackage.demoproject.exceptions.StatementSentException;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class StatementService {
 
     private final StatementRepository statementRepository;
@@ -45,99 +47,82 @@ public class StatementService {
                 .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
     }
 
-    public List<Statement> findAllSentStatements(Boolean sortByData, Boolean sortByDesc) {
-        if (sortByDesc) return statementRepository
-                .findAllByStatementType(StatementType.SENT, Sort.by("createAt").descending());
-
-        else if (sortByData) return statementRepository
-                .findAllByStatementType(StatementType.SENT, Sort.by("createAt"));
-
-        else return statementRepository.findAll();
-    }
-
-    public List<Statement> findAllStatementsByType(StatementType statementType, Integer page,
-                                                   Boolean sortByData, Boolean sortByDesc) {
-        if (page == null && !sortByDesc) return statementRepository
-                .findAllByStatementType(statementType, Sort.by("createAt"));
-
-        else if (page == null) return statementRepository
-                .findAllByStatementType(statementType, Sort.by("createAt").descending());
-
-        else if (sortByDesc) return statementRepository
-                .findAllByStatementType(statementType, PageRequest.of(page, perPage,
+    //Новый метод c пагинацией и сортировкой по типу заявки
+    public List<Statement> findAllStatementsByStatementType(String statementType, Integer page, Boolean sortByDesc) {
+        if (page != null && sortByDesc) return statementRepository
+                .findAllByStatementType(StatementType.valueOf(statementType), PageRequest.of(page, perPage,
                         Sort.by("createAt").descending()));
 
+        else if (page != null) return statementRepository
+                .findAllByStatementType(StatementType.valueOf(statementType), PageRequest.of(page, perPage,
+                        Sort.by("createAt")));
+
+        else if (sortByDesc) return statementRepository
+                .findAllByStatementType(StatementType.valueOf(statementType),
+                        Sort.by("createAt").descending());
+
         else return statementRepository
-                    .findAllByStatementType(statementType, PageRequest.of(page, perPage,
-                            Sort.by("createAt")));
+                    .findAllByStatementType(StatementType.valueOf(statementType),
+                            Sort.by("createAt"));
     }
 
-    public List<Statement> findAllByUsername(String username) {
+    //Новый метод по поиску заявок с сортировкой и пагинацией по нахождению по юзеру
+    public List<Statement> findAllStatementsByUser(String username, Integer page, Boolean sortByDesc) {
         ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
-        return statementRepository.findAllByUser(user);
-    }
+        if (page != null && sortByDesc) return statementRepository
+                .findAllByUser(user, PageRequest.of(page, perPage,
+                        Sort.by("createAt").descending()));
 
-    public List<Statement> findAllByUsernameAndType(String username, StatementType statementType,
-                                                    Boolean sortByData, Boolean sortByDesc) {
-        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
+        else if (page != null) return statementRepository
+                .findAllByUser(user, PageRequest.of(page, perPage,
+                        Sort.by("createAt")));
 
-        if (sortByDesc)
-            return statementRepository
-                    .findAllByUserAndStatementType(user, statementType, Sort.by("createAt").descending());
-
-        else if (sortByData)
-            return statementRepository
-                    .findAllByUserAndStatementType(user, statementType, Sort.by("createAt"));
-
-        else return statementRepository.findAllByUserAndStatementType(user, statementType);
-    }
-
-    public List<Statement> findAllByUsernameAndPagination(String username, Integer page,
-                                                          Boolean sortByData, Boolean sortByDesc) {
-        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
-
-        if (sortByDesc) return statementRepository
-                .findAllByUser(user, PageRequest.of(page, perPage, Sort.by("createAt").descending()));
-
-        else if (sortByData) return statementRepository
-                .findAllByUser(user, PageRequest.of(page, perPage, Sort.by("createAt")));
-
-        else return statementRepository.findAllByUser(user, PageRequest.of(page, perPage));
-    }
-
-    public List<Statement> findAllByUsernameWithSorting(String username, Boolean sortByDate, Boolean sortByDesc) {
-        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
-
-        if (sortByDesc) return statementRepository
+        else if (sortByDesc) return statementRepository
                 .findAllByUser(user, Sort.by("createAt").descending());
 
-        else return statementRepository.findAllByUser(user, Sort.by("createAt"));
+        else return statementRepository
+                    .findAllByUser(user, Sort.by("createAt"));
     }
 
-    public List<Statement> findAllWithAllParameters(String username,
-                                                    StatementType statementType,
-                                                    Integer page,
-                                                    Boolean sortByData,
-                                                    Boolean sortByDesc) {
+    //Новый мето по поиску с помощью пользователя и типа заявки
+    public List<Statement> findAllStatementsByUserAndStatementType(String username,
+                                                                   String statementType,
+                                                                   Integer page,
+                                                                   Boolean sortByDesc) {
 
-        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
+        if (username == null) return findAllStatementsByStatementType(statementType, page, sortByDesc);
+        else if (statementType == null) return findAllStatementsByUser(username, page, sortByDesc);
+        else {
+            ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
-        if (sortByDesc) return statementRepository
-                .findAllByUserAndStatementType(user, statementType,
-                        PageRequest.of(page, perPage, Sort.by("createAt").descending()));
+            if (page != null && sortByDesc) return statementRepository
+                    .findAllByUserAndStatementType(user, StatementType.valueOf(statementType),
+                            PageRequest.of(page, perPage,
+                                    Sort.by("createAt").descending()));
 
-        else return statementRepository
-                .findAllByUserAndStatementType(user, statementType,
-                        PageRequest.of(page, perPage, Sort.by("createAt")));
+            else if (page != null) return statementRepository
+                    .findAllByUserAndStatementType(user, StatementType.valueOf(statementType),
+                            PageRequest.of(page, perPage,
+                                    Sort.by("createAt")));
 
+            else if (sortByDesc) return statementRepository
+                    .findAllByUserAndStatementType(user, StatementType.valueOf(statementType),
+                            Sort.by("createAt").descending());
+
+            else return statementRepository
+                        .findAllByUserAndStatementType(user, StatementType.valueOf(statementType),
+                                Sort.by("createAt"));
+        }
     }
 
     //Создает и сохраняет заявку/черновик в репозиторий
+    @Transactional
     public void create(String username, StatementType statementType, String statement) {
         statementRepository.save(mapStatement(username, statementType, statement));
     }
 
+    @Transactional
     public void sentStatementFromDrafts(Integer id) {
         Statement statement = findByIdFromRepo(id);
 
@@ -149,6 +134,7 @@ public class StatementService {
         }
     }
 
+    @Transactional
     public void acceptSentStatement(Integer id) {
         Statement statement = findByIdAndStatementTypeFromRepo(id, StatementType.SENT);
 
@@ -156,6 +142,7 @@ public class StatementService {
         statementRepository.save(statement);
     }
 
+    @Transactional
     public void rejectSentStatement(Integer id) {
         Statement statement = findByIdAndStatementTypeFromRepo(id, StatementType.SENT);
 
@@ -163,6 +150,7 @@ public class StatementService {
         statementRepository.save(statement);
     }
 
+    @Transactional
     public void refactor(RefactorStatementDTO refStatementDTO) {
         Statement refStatement = findByIdFromRepo(refStatementDTO.getId());
 
