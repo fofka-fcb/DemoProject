@@ -39,49 +39,101 @@ public class StatementService {
         return findByIdAndStatementTypeFromRepo(id, statementType);
     }
 
-    public List<Statement> findAllStatementsByType(StatementType statementType) {
-        return statementRepository.findAllByStatementType(statementType);
+    public Statement findOne(Integer id, String username) {
+        ApplicationUser user = findUserFromRepo(username);
+        return statementRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new StatementNotFoundException("Statement is not found!"));
     }
 
-    public List<Statement> findAllSentStatements() {
-        return statementRepository.findAllByStatementType(StatementType.SENT);
+    public List<Statement> findAllSentStatements(Boolean sortByData, Boolean sortByDesc) {
+        if (sortByDesc) return statementRepository
+                .findAllByStatementType(StatementType.SENT, Sort.by("createAt").descending());
+
+        else if (sortByData) return statementRepository
+                .findAllByStatementType(StatementType.SENT, Sort.by("createAt"));
+
+        else return statementRepository.findAll();
     }
 
-    public List<Statement> findAllByUsername(String username, StatementType statementType) {
+    public List<Statement> findAllStatementsByType(StatementType statementType, Integer page,
+                                                   Boolean sortByData, Boolean sortByDesc) {
+        if (page == null && !sortByDesc) return statementRepository
+                .findAllByStatementType(statementType, Sort.by("createAt"));
+
+        else if (page == null) return statementRepository
+                .findAllByStatementType(statementType, Sort.by("createAt").descending());
+
+        else if (sortByDesc) return statementRepository
+                .findAllByStatementType(statementType, PageRequest.of(page, perPage,
+                        Sort.by("createAt").descending()));
+
+        else return statementRepository
+                    .findAllByStatementType(statementType, PageRequest.of(page, perPage,
+                            Sort.by("createAt")));
+    }
+
+    public List<Statement> findAllByUsername(String username) {
         ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
-        return statementRepository.findAllByUserAndStatementType(user, statementType);
+        return statementRepository.findAllByUser(user);
     }
 
-    public List<Statement> findAllWithPaginationAndSort(String username,
-                                                        StatementType statementType,
-                                                        Integer page,
-                                                        Boolean sortByData,
-                                                        Boolean sortByDesc) {
+    public List<Statement> findAllByUsernameAndType(String username, StatementType statementType,
+                                                    Boolean sortByData, Boolean sortByDesc) {
+        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
+
+        if (sortByDesc)
+            return statementRepository
+                    .findAllByUserAndStatementType(user, statementType, Sort.by("createAt").descending());
+
+        else if (sortByData)
+            return statementRepository
+                    .findAllByUserAndStatementType(user, statementType, Sort.by("createAt"));
+
+        else return statementRepository.findAllByUserAndStatementType(user, statementType);
+    }
+
+    public List<Statement> findAllByUsernameAndPagination(String username, Integer page,
+                                                          Boolean sortByData, Boolean sortByDesc) {
+        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
+
+        if (sortByDesc) return statementRepository
+                .findAllByUser(user, PageRequest.of(page, perPage, Sort.by("createAt").descending()));
+
+        else if (sortByData) return statementRepository
+                .findAllByUser(user, PageRequest.of(page, perPage, Sort.by("createAt")));
+
+        else return statementRepository.findAllByUser(user, PageRequest.of(page, perPage));
+    }
+
+    public List<Statement> findAllByUsernameWithSorting(String username, Boolean sortByDate, Boolean sortByDesc) {
+        ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
+
+        if (sortByDesc) return statementRepository
+                .findAllByUser(user, Sort.by("createAt").descending());
+
+        else return statementRepository.findAllByUser(user, Sort.by("createAt"));
+    }
+
+    public List<Statement> findAllWithAllParameters(String username,
+                                                    StatementType statementType,
+                                                    Integer page,
+                                                    Boolean sortByData,
+                                                    Boolean sortByDesc) {
 
         ApplicationUser user = findUserFromRepoByUsernameStartingWith(username);
 
-        if ((page == null)) {
-            return statementRepository.findAllByUserAndStatementType(user, statementType);
+        if (sortByDesc) return statementRepository
+                .findAllByUserAndStatementType(user, statementType,
+                        PageRequest.of(page, perPage, Sort.by("createAt").descending()));
 
-        } else if (sortByData && sortByDesc) {
-            return statementRepository
-                    .findAllByUserAndStatementType(user, statementType,
-                            PageRequest.of(page, perPage, Sort.by("createAt").descending()));
-
-        } else if (sortByData) {
-            return statementRepository
-                    .findAllByUserAndStatementType(user, statementType,
-                            PageRequest.of(page, perPage, Sort.by("createAt")));
-
-        } else {
-            return statementRepository.findAllByUserAndStatementType(user, statementType,
-                    PageRequest.of(page, perPage));
-
-        }
+        else return statementRepository
+                .findAllByUserAndStatementType(user, statementType,
+                        PageRequest.of(page, perPage, Sort.by("createAt")));
 
     }
 
+    //Создает и сохраняет заявку/черновик в репозиторий
     public void create(String username, StatementType statementType, String statement) {
         statementRepository.save(mapStatement(username, statementType, statement));
     }
@@ -146,6 +198,11 @@ public class StatementService {
 
     private ApplicationUser findUserFromRepoByUsernameStartingWith(String username) {
         return userRepository.findByUsernameStartingWith(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
+    }
+
+    public ApplicationUser findUserFromRepo(String username) {
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
     }
 

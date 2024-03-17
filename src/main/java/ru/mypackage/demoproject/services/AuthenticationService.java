@@ -71,8 +71,8 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        ApplicationUser user = userRepository.findByUsername(username).get();
-        String access_token = tokenService.generateAccessToken(user);
+        ApplicationUser user = userRepository.findByUsername(username).get(); ///!!!!
+        String access_token = tokenService.generateAccessToken(user); //!!!!
 
         revokeAllUserTokens(user);
         saveUserToken(user, access_token);

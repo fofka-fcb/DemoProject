@@ -35,14 +35,20 @@ public class OperatorController {
 
         StatementsResponse statementsResponse;
 
-        if (username == null) {
-            statementsResponse = new StatementsResponse(statementService.findAllSentStatements());
-
-        } else {
+        if (username == null && page == null)
             statementsResponse = new StatementsResponse(statementService
-                    .findAllWithPaginationAndSort(username, StatementType.SENT, page, sortByDate, sortByDesc
-                    ));
-        }
+                    .findAllSentStatements(sortByDate, sortByDesc));
+        else if (page == null)
+            statementsResponse = new StatementsResponse(statementService
+                    .findAllByUsernameAndType(username, StatementType.SENT,
+                            sortByDate, sortByDesc));
+        else if (username == null)
+            statementsResponse = new StatementsResponse(statementService
+                    .findAllStatementsByType(StatementType.SENT, page, sortByDate, sortByDesc));
+
+        else statementsResponse = new StatementsResponse(statementService
+                    .findAllWithAllParameters(username, StatementType.SENT,
+                            page, sortByDate, sortByDesc));
 
         return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
     }

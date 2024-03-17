@@ -29,8 +29,9 @@ public class AdminController {
         return new ResponseEntity<>(new UsersResponseDTO(userService.findAllUsers()), HttpStatus.OK);
     }
 
-    @GetMapping("/users/sent")
+    @GetMapping("/users/statements")
     public ResponseEntity<StatementsResponse> getSentStatements(
+            @RequestParam(value = "type") String type,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "sort", required = false) boolean sortByDate,
@@ -38,57 +39,21 @@ public class AdminController {
     ) {
         StatementsResponse statementsResponse;
 
-        if (username == null) {
-            statementsResponse = new StatementsResponse(statementService.findAllStatementsByType(StatementType.SENT));
-
-        } else {
+        if (username == null && page == null)
             statementsResponse = new StatementsResponse(statementService
-                    .findAllWithPaginationAndSort(username, StatementType.SENT, page, sortByDate, sortByDesc
-                    ));
-        }
+                    .findAllStatementsByType(StatementType.valueOf(type), page,
+                            sortByDate, sortByDesc));
 
-        return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
-    }
-
-    @GetMapping("/users/accept")
-    public ResponseEntity<StatementsResponse> getAcceptStatements(
-            @RequestParam(value = "username", required = false) String username,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "sort", required = false) boolean sortByDate,
-            @RequestParam(value = "desc", required = false) boolean sortByDesc) {
-
-        StatementsResponse statementsResponse;
-
-        if (username == null) {
-            statementsResponse = new StatementsResponse(statementService.findAllStatementsByType(StatementType.ACCEPT));
-
-        } else {
+        else if (page == null)
             statementsResponse = new StatementsResponse(statementService
-                    .findAllWithPaginationAndSort(username, StatementType.ACCEPT, page, sortByDate, sortByDesc
-                    ));
-        }
+                    .findAllByUsernameAndType(username, StatementType.valueOf(type),
+                            sortByDate, sortByDesc));
 
-        return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
-
-    }
-
-    @GetMapping("/users/reject")
-    public ResponseEntity<StatementsResponse> getRejectStatements(
-            @RequestParam(value = "username", required = false) String username,
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "sort", required = false) boolean sortByDate,
-            @RequestParam(value = "desc", required = false) boolean sortByDesc) {
-
-        StatementsResponse statementsResponse;
-
-        if (username == null) {
-            statementsResponse = new StatementsResponse(statementService.findAllStatementsByType(StatementType.REJECT));
-
-        } else {
+        else
             statementsResponse = new StatementsResponse(statementService
-                    .findAllWithPaginationAndSort(username, StatementType.REJECT, page, sortByDate, sortByDesc
-                    ));
-        }
+                    .findAllWithAllParameters(username, StatementType.valueOf(type),
+                            page, sortByDate, sortByDesc));
+
 
         return new ResponseEntity<>(statementsResponse, HttpStatus.OK);
     }

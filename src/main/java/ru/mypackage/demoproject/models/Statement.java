@@ -28,6 +28,14 @@ public class Statement {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Integer getUser() {
         return user.getId();
     }
