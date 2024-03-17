@@ -1,7 +1,7 @@
 package ru.mypackage.demoproject.services;
 
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.LoginResponseDTO;
 import ru.mypackage.demoproject.dto.RegisterResponseDTO;
 import ru.mypackage.demoproject.models.*;
-import ru.mypackage.demoproject.repository.PhoneRepository;
 import ru.mypackage.demoproject.repository.RoleRepository;
 import ru.mypackage.demoproject.repository.TokenRepository;
 import ru.mypackage.demoproject.repository.UserRepository;
@@ -22,18 +21,31 @@ import java.util.Set;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TokenRepository tokenRepository;
-    private final PhoneRepository phoneRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final DaDataService daDataService;
+
+    @Autowired
+    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository,
+                                 TokenRepository tokenRepository, PasswordEncoder passwordEncoder,
+                                 ModelMapper modelMapper, AuthenticationManager authenticationManager,
+                                 TokenService tokenService, DaDataService daDataService) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+        this.daDataService = daDataService;
+    }
 
     public RegisterResponseDTO registerUser(String username, String password, String phoneNumber) {
         String encodedPassword = passwordEncoder.encode(password);

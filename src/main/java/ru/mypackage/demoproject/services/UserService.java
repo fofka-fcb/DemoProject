@@ -1,10 +1,6 @@
 package ru.mypackage.demoproject.services;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.jpa.EntityManagerHolder;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +13,21 @@ import ru.mypackage.demoproject.repository.UserRepository;
 import ru.mypackage.demoproject.repository.UserRoleJunctionRepository;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleJunctionRepository junctionRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserRoleJunctionRepository junctionRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.junctionRepository = junctionRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<UserDTO> findAllUsers() {

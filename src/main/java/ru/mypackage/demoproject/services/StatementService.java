@@ -1,6 +1,6 @@
 package ru.mypackage.demoproject.services;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,12 +19,17 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StatementService {
 
     private final StatementRepository statementRepository;
     private final UserRepository userRepository;
     private final Integer perPage = 5;
+
+    @Autowired
+    public StatementService(StatementRepository statementRepository, UserRepository userRepository) {
+        this.statementRepository = statementRepository;
+        this.userRepository = userRepository;
+    }
 
     public StatementType checkStatus(Integer id) {
         return findByIdFromRepo(id).getStatementType();

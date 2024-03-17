@@ -1,6 +1,6 @@
 package ru.mypackage.demoproject.configuration.security;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,11 +21,16 @@ import ru.mypackage.demoproject.services.LogoutService;
 import ru.mypackage.demoproject.utils.JWTFilter;
 
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfiguration {
 
     private final JWTFilter jwtFilter;
     private final LogoutService logoutHandler;
+
+    @Autowired
+    public SecurityConfiguration(JWTFilter jwtFilter, LogoutService logoutHandler) {
+        this.jwtFilter = jwtFilter;
+        this.logoutHandler = logoutHandler;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

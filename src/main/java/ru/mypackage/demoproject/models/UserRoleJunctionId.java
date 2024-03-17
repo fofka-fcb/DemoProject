@@ -1,10 +1,17 @@
 package ru.mypackage.demoproject.models;
 
-import lombok.Data;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRoleJunctionId implements Serializable {
 
     private ApplicationUser user;

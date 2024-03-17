@@ -6,7 +6,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -16,10 +16,14 @@ import org.springframework.stereotype.Component;
 import ru.mypackage.demoproject.utils.RSAKeyProperties;
 
 @Component
-@RequiredArgsConstructor
 public class JWTDecoderConfig {
 
     private final RSAKeyProperties keys;
+
+    @Autowired
+    public JWTDecoderConfig(RSAKeyProperties keys) {
+        this.keys = keys;
+    }
 
     @Bean
     public JwtDecoder jwtDecoder() {

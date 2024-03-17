@@ -1,15 +1,11 @@
 package ru.mypackage.demoproject.controllers;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import ru.mypackage.demoproject.dto.StatementErrorResponse;
 import ru.mypackage.demoproject.dto.StatementsResponse;
-import ru.mypackage.demoproject.dto.UserErrorResponse;
 import ru.mypackage.demoproject.dto.UsersResponseDTO;
-import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
 import ru.mypackage.demoproject.models.StatementType;
 import ru.mypackage.demoproject.services.StatementService;
 import ru.mypackage.demoproject.services.UserService;
@@ -17,11 +13,16 @@ import ru.mypackage.demoproject.services.UserService;
 @RestController
 @RequestMapping("/admin")
 @CrossOrigin("*")
-@RequiredArgsConstructor
 public class AdminController {
 
     private final UserService userService;
     private final StatementService statementService;
+
+    @Autowired
+    public AdminController(UserService userService, StatementService statementService) {
+        this.userService = userService;
+        this.statementService = statementService;
+    }
 
     @GetMapping("/users")
     public ResponseEntity<UsersResponseDTO> getUsers() {

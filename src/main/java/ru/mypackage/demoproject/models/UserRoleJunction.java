@@ -1,18 +1,10 @@
 package ru.mypackage.demoproject.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @IdClass(UserRoleJunctionId.class)
 @Table(name = "user_role_junction")
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserRoleJunction {
 
     @Id
@@ -24,4 +16,28 @@ public class UserRoleJunction {
     @ManyToOne
     @JoinColumn(name = "id_role")
     private Role role;
+
+    public UserRoleJunction() {
+    }
+
+    public UserRoleJunction(ApplicationUser user, Role role) {
+        this.user = user;
+        this.role = role;
+    }
+
+    public Integer getUser() {
+        return user.getId();
+    }
+
+    public void setUser(ApplicationUser user) {
+        this.user = user;
+    }
+
+    public Integer getRole() {
+        return role.getId();
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

@@ -2,7 +2,7 @@ package ru.mypackage.demoproject.services;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,10 +12,15 @@ import ru.mypackage.demoproject.models.Token;
 import ru.mypackage.demoproject.repository.TokenRepository;
 
 @Service
-@RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
+
+    @Autowired
+    public LogoutService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
+
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 

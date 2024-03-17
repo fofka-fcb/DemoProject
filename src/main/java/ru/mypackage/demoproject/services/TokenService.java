@@ -1,7 +1,7 @@
 package ru.mypackage.demoproject.services;
 
 import com.nimbusds.jwt.SignedJWT;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,11 +19,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class TokenService {
 
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRepository;
+
+    @Autowired
+    public TokenService(JwtEncoder jwtEncoder, UserRepository userRepository) {
+        this.jwtEncoder = jwtEncoder;
+        this.userRepository = userRepository;
+    }
 
     public String generateAccessToken(ApplicationUser user) {
         Instant now = Instant.now();

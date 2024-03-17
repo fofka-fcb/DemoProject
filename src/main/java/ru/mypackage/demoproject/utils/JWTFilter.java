@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,11 +18,16 @@ import ru.mypackage.demoproject.services.TokenService;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
+
+    @Autowired
+    public JWTFilter(TokenService tokenService, TokenRepository tokenRepository) {
+        this.tokenService = tokenService;
+        this.tokenRepository = tokenRepository;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
