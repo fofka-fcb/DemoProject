@@ -3,6 +3,7 @@ package ru.mypackage.demoproject.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.UserDTO;
 import ru.mypackage.demoproject.models.ApplicationUser;
@@ -13,7 +14,9 @@ import ru.mypackage.demoproject.repository.UserRepository;
 import ru.mypackage.demoproject.repository.UserRoleJunctionRepository;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -41,21 +44,17 @@ public class UserService {
         return userDTOList;
     }
 
+    @Transactional
     public void setOperator(String username) {
         ApplicationUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User is not valid"));
 
         Role role = roleRepository.findByAuthority("OPERATOR").orElseThrow();
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setAuthorities(roles);
 
-        UserRoleJunction userRoleJunction = junctionRepository.findUserRoleJunctionByUser(user);
-
-        junctionRepository.delete(userRoleJunction);
-
-        userRoleJunction.setUser(user);
-        userRoleJunction.setRole(role);
-
-        junctionRepository.save(userRoleJunction);
-
+        userRepository.save(user);
     }
 
     private UserDTO mapUserDTO(ApplicationUser user) {
