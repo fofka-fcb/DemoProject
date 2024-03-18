@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mypackage.demoproject.dto.StatementsResponse;
 import ru.mypackage.demoproject.dto.UsersResponseDTO;
-import ru.mypackage.demoproject.models.StatementType;
 import ru.mypackage.demoproject.services.StatementService;
 import ru.mypackage.demoproject.services.UserService;
 

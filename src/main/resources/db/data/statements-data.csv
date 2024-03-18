@@ -1,13 +1,13 @@
-id,id_of_user,statement,type,created_at
-1,3,first sent statement,SENT,2024-03-16 19:25:45.493000
-2,3,second sent statement,SENT,2024-03-16 19:25:50.897000
-3,3,third sent statement,SENT,2024-03-16 21:49:45.125000
-4,3,first draft,DRAFT,2024-03-17 18:01:09.767000
-5,3,second draft,DRAFT,2024-03-17 18:01:15.699000
-6,3,third draft,DRAFT,2024-03-17 22:15:22.862000
-7,3,this statement is accepted,ACCEPT,2024-03-17 17:10:52.255000
-8,3,this statement is rejected,REJECT,2024-03-17 17:11:15.466000
-9,4,first sent statement,SENT,2024-03-18 01:15:34.266
-10,4,first draft,DRAFT,2024-03-18 01:36:00.841
-11,5,first sent statement,SENT,2024-03-18 01:35:56.574
-12,5,first draft,DRAFT,2024-03-18 01:15:22.862
+id_of_user,statement,type,created_at
+3,first sent statement,SENT,2024-03-16 19:25:45.493000
+3,second sent statement,SENT,2024-03-16 19:25:50.897000
+3,third sent statement,SENT,2024-03-16 21:49:45.125000
+3,first draft,DRAFT,2024-03-17 18:01:09.767000
+3,second draft,DRAFT,2024-03-17 18:01:15.699000
+3,third draft,DRAFT,2024-03-17 22:15:22.862000
+3,this statement is accepted,ACCEPT,2024-03-17 17:10:52.255000
+3,this statement is rejected,REJECT,2024-03-17 17:11:15.466000
+4,first sent statement,SENT,2024-03-18 01:15:34.266
+4,first draft,DRAFT,2024-03-18 01:36:00.841
+5,first sent statement,SENT,2024-03-18 01:35:56.574
+5,first draft,DRAFT,2024-03-18 01:15:22.862

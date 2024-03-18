@@ -1,19 +1,10 @@
 package ru.mypackage.demoproject;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.mypackage.demoproject.models.ApplicationUser;
-import ru.mypackage.demoproject.models.Role;
-import ru.mypackage.demoproject.repository.RoleRepository;
-import ru.mypackage.demoproject.repository.UserRepository;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @SpringBootApplication
 @EnableFeignClients
@@ -28,34 +19,4 @@ public class DemoProjectApplication {
         return new ModelMapper();
     }
 
-//    @Bean
-//    CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncode) {
-//        return args -> {
-//            if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
-//            Role roleAdmin = roleRepository.save(new Role("ADMIN"));
-//            Role roleOperator = roleRepository.save(new Role("OPERATOR"));
-//            Role roleUser = roleRepository.save(new Role("USER"));
-//
-//            Set<Role> adminRoles = new HashSet<>();
-//            adminRoles.add(roleAdmin);
-//
-//            Set<Role> operatorRoles = new HashSet<>();
-//            operatorRoles.add(roleOperator);
-//
-//            Set<Role> userRoles = new HashSet<>();
-//            userRoles.add(roleUser);
-//
-//            ApplicationUser admin = new ApplicationUser("admin", passwordEncode.encode("password"), adminRoles);
-//            ApplicationUser operator = new ApplicationUser("operator", passwordEncode.encode("password"), operatorRoles);
-//            ApplicationUser user_1 = new ApplicationUser("user_1", passwordEncode.encode("password"), userRoles);
-//            ApplicationUser user_2 = new ApplicationUser("user_2", passwordEncode.encode("password"), userRoles);
-//            ApplicationUser user_3 = new ApplicationUser("user_3", passwordEncode.encode("password"), userRoles);
-//
-//            userRepository.save(admin);
-//            userRepository.save(operator);
-//            userRepository.save(user_1);
-//            userRepository.save(user_2);
-//            userRepository.save(user_3);
-//        };
-//    }
 }
