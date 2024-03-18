@@ -1,6 +1,6 @@
 username,password
-admin,password
-operator,password
-user_1,password
-user_2,password
-user_3,password
+admin,$2a$10$IaPsNVytGCmCEFSDjmqsrOClPLq9eaViIY.9i/gMavFCWneixj502
+operator,$2a$10$s9liSQrSWMYbLGiusUDciOFd71vbK0iXkL4A38uVYOhb124t3E2r6
+user_1,$2a$10$E2tnK4QWnsA8BbRIsihD2.Vfvi../69b6M2VuvQKFWwhr//lHSuj.
+user_2,$2a$10$iGMRH6I3PmsMnpi..ELxUONl3IOD4g6cwj6GV/qs9ZbDXTRn5NFxe
+user_3,$2a$10$4RrrmgV.EU0RtqavdKHsAeymBonlJoV1ASAJg4rrP64.GUIBcEPRW

@@ -1,14 +1,11 @@
 package ru.mypackage.demoproject;
 
-import feign.RequestInterceptor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.mypackage.demoproject.models.ApplicationUser;
 import ru.mypackage.demoproject.models.Role;
@@ -17,7 +14,6 @@ import ru.mypackage.demoproject.repository.UserRepository;
 
 import java.util.HashSet;
 import java.util.Set;
-
 
 @SpringBootApplication
 @EnableFeignClients
@@ -51,11 +47,15 @@ public class DemoProjectApplication {
 //
 //            ApplicationUser admin = new ApplicationUser("admin", passwordEncode.encode("password"), adminRoles);
 //            ApplicationUser operator = new ApplicationUser("operator", passwordEncode.encode("password"), operatorRoles);
-//            ApplicationUser user = new ApplicationUser("user", passwordEncode.encode("password"), userRoles);
+//            ApplicationUser user_1 = new ApplicationUser("user_1", passwordEncode.encode("password"), userRoles);
+//            ApplicationUser user_2 = new ApplicationUser("user_2", passwordEncode.encode("password"), userRoles);
+//            ApplicationUser user_3 = new ApplicationUser("user_3", passwordEncode.encode("password"), userRoles);
 //
 //            userRepository.save(admin);
 //            userRepository.save(operator);
-//            userRepository.save(user);
+//            userRepository.save(user_1);
+//            userRepository.save(user_2);
+//            userRepository.save(user_3);
 //        };
 //    }
 }

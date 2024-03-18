@@ -59,6 +59,17 @@
             <column name="password" type="VARCHAR"/>
         </createTable>
 
+        <createTable tableName="phones">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="phones_pkey"/>
+            </column>
+            <column name="id_of_user" type="INTEGER"/>
+            <column name="type" type="VARCHAR"/>
+            <column name="phone" type="VARCHAR"/>
+            <column name="country_code" type="INTEGER"/>
+            <column name="city_code" type="INTEGER"/>
+        </createTable>
+
         <addForeignKeyConstraint baseColumnNames="id_of_user" baseTableName="statements"
                                  constraintName="statements_id_of_user_fkey" deferrable="false"
                                  initiallyDeferred="false"
@@ -79,6 +90,11 @@
                                  constraintName="user_role_junction_id_user_fkey" deferrable="false"
                                  initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION"
                                  referencedColumnNames="user_id" referencedTableName="users"/>
+
+        <addForeignKeyConstraint baseColumnNames="id_of_user" baseTableName="phones"
+                                 constraintName="phones_id_of_user_fkey" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id"
+                                 referencedTableName="users"/>
     </changeSet>
 
     <changeSet author="self" id="v1-2">
@@ -103,5 +119,13 @@
         </preConditions>
 
         <loadData tableName="user_role_junction" file="db/data/user_role_junction-data.csv"/>
+    </changeSet>
+
+    <changeSet author="self" id="v1-5">
+        <preConditions onFail="MARK_RAN">
+            <tableIsEmpty tableName="statements"/>
+        </preConditions>
+
+        <loadData tableName="statements" file="db/data/statements-data.csv"/>
     </changeSet>
 </databaseChangeLog>

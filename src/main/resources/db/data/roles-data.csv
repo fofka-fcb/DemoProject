@@ -1,4 +1,4 @@
-authority
-ADMIN
-OPERATOR
-USER
+role_id,authority
+1,ADMIN
+2,OPERATOR
+3,USER
