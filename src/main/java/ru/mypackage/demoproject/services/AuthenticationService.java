@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Transactional
 public class AuthenticationService {
 
     private final UserRepository userRepository;
@@ -47,6 +46,7 @@ public class AuthenticationService {
         this.daDataService = daDataService;
     }
 
+    @Transactional
     public RegisterResponseDTO registerUser(String username, String password, String phoneNumber) {
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
@@ -68,12 +68,13 @@ public class AuthenticationService {
         return convertToRegisterResponseDTO(applicationUser);
     }
 
+    @Transactional
     public LoginResponseDTO loginUser(String username, String password) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        ApplicationUser user = userRepository.findByUsername(username).get();
+        ApplicationUser user = (ApplicationUser) auth.getPrincipal();
         String access_token = tokenService.generateAccessToken(user);
 
         revokeAllUserTokens(user);
@@ -103,7 +104,7 @@ public class AuthenticationService {
             token.setExpired(true);
         }
 
-        tokenRepository.saveAll(tokenList);
+        tokenRepository.saveAllAndFlush(tokenList);
     }
 
     private RegisterResponseDTO convertToRegisterResponseDTO(ApplicationUser user) {

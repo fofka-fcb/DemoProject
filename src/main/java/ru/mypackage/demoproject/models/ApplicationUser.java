@@ -37,13 +37,13 @@ public class ApplicationUser implements UserDetails {
     )
     private Set<Role> authorities;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Token> tokenList;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Statement> statementList;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user")
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Phone phone;
 
