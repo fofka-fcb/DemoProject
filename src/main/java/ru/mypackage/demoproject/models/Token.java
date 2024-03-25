@@ -12,6 +12,9 @@ public class Token {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "username")
+    private String username;
+
     @Column(name = "token")
     private String token;
 
@@ -22,17 +25,31 @@ public class Token {
     @Column(name = "type")
     private TokenType tokenType = TokenType.BEARER;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
-    private ApplicationUser user;
-
     public Token() {
     }
 
-    public Token(String token, boolean expired, ApplicationUser user) {
+    public Token(Integer id, String username, String token, Boolean expired, TokenType tokenType) {
+        this.id = id;
+        this.username = username;
         this.token = token;
         this.expired = expired;
-        this.user = user;
+        this.tokenType = tokenType;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getToken() {
@@ -59,11 +76,4 @@ public class Token {
         this.tokenType = tokenType;
     }
 
-    public Integer getUser() {
-        return user.getId();
-    }
-
-    public void setUser(ApplicationUser user) {
-        this.user = user;
-    }
 }

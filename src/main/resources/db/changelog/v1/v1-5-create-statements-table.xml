@@ -1,0 +1,26 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="self" id="v1-5">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="statements"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="statements">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="statements_pkey"/>
+            </column>
+            <column name="username" type="VARCHAR"/>
+            <column name="statement" type="VARCHAR"/>
+            <column name="type" type="VARCHAR"/>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

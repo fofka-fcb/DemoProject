@@ -3,6 +3,20 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="v1-create-tables.xml" relativeToChangelogFile="true"/>
+    <include file="v1-1-create-users-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="v1-2-create-roles-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="v1-3-create-user_role_junction-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="v1-4-create-phones-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="v1-5-create-statements-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="v1-6-create-token-table.xml" relativeToChangelogFile="true"/>
+
+    <include file="v1-7-load-data.xml" relativeToChangelogFile="true"/>
+
+
 
 </databaseChangeLog>

@@ -3,13 +3,11 @@ package ru.mypackage.demoproject.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,16 +35,6 @@ public class ApplicationUser implements UserDetails {
     )
     private Set<Role> authorities;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Token> tokenList;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Statement> statementList;
-
-    @OneToOne(mappedBy = "user")
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Phone phone;
-
     public ApplicationUser() {
         super();
         this.authorities = new HashSet<Role>();
@@ -57,14 +45,6 @@ public class ApplicationUser implements UserDetails {
         this.password = password;
         this.authorities = authorities;
     }
-
-    public ApplicationUser(String username, String password, Set<Role> authorities, Phone phone) {
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
-        this.phone = phone;
-    }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

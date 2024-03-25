@@ -9,7 +9,6 @@ import ru.mypackage.demoproject.models.ApplicationUser;
 import ru.mypackage.demoproject.models.Role;
 import ru.mypackage.demoproject.repository.RoleRepository;
 import ru.mypackage.demoproject.repository.UserRepository;
-import ru.mypackage.demoproject.repository.UserRoleJunctionRepository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,13 +20,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final UserRoleJunctionRepository junctionRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserRoleJunctionRepository junctionRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.junctionRepository = junctionRepository;
     }
 
     @Transactional(readOnly = true)

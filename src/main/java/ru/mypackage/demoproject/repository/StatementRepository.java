@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.mypackage.demoproject.models.ApplicationUser;
 import ru.mypackage.demoproject.models.Statement;
 import ru.mypackage.demoproject.models.StatementType;
 
@@ -14,16 +13,16 @@ import java.util.Optional;
 @Repository
 public interface StatementRepository extends JpaRepository<Statement, Integer> {
 
-    List<Statement> findAllByUser(ApplicationUser user);
-    List<Statement> findAllByUser(ApplicationUser user, Sort sort);
-    List<Statement> findAllByUser(ApplicationUser user, Pageable pageable);
+    List<Statement> findAllByUsername(String username);
+    List<Statement> findAllByUsername(String username, Sort sort);
+    List<Statement> findAllByUsername(String username, Pageable pageable);
 
     Optional<Statement> findByIdAndStatementType(Integer id, StatementType statementType);
-    Optional<Statement> findByIdAndUser(Integer id, ApplicationUser user);
+    Optional<Statement> findByIdAndUsername(Integer id, String username);
 
-    List<Statement> findAllByUserAndStatementType(ApplicationUser user, StatementType statementType);
-    List<Statement> findAllByUserAndStatementType(ApplicationUser user, StatementType statementType, Sort sort);
-    List<Statement> findAllByUserAndStatementType(ApplicationUser user, StatementType statementType, Pageable pageable);
+    List<Statement> findAllByStatementTypeAndUsernameStartingWith(StatementType statementType, String username);
+    List<Statement> findAllByStatementTypeAndUsernameStartingWith(StatementType statementType, String username, Sort sort);
+    List<Statement> findAllByStatementTypeAndUsernameStartingWith(StatementType statementType, String username, Pageable pageable);
 
     List<Statement> findAllByStatementType(StatementType statementType);
     List<Statement> findAllByStatementType(StatementType statementType, Sort sort);

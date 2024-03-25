@@ -5,13 +5,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.mypackage.demoproject.models.ApplicationUser;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<ApplicationUser, Integer> {
 
-    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = {"authorities", "phone"})
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = {"authorities"})
     Optional<ApplicationUser> findByUsername(String username);
+
+    @EntityGraph(attributePaths = {"authorities"})
+    List<ApplicationUser> findAll();
 
     Optional<ApplicationUser> findByUsernameStartingWith(String username);
 

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.LoginResponseDTO;
 import ru.mypackage.demoproject.dto.RegisterResponseDTO;
 import ru.mypackage.demoproject.models.*;
+import ru.mypackage.demoproject.repository.PhoneRepository;
 import ru.mypackage.demoproject.repository.RoleRepository;
 import ru.mypackage.demoproject.repository.TokenRepository;
 import ru.mypackage.demoproject.repository.UserRepository;
@@ -25,6 +26,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TokenRepository tokenRepository;
+    private final PhoneRepository phoneRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final AuthenticationManager authenticationManager;
@@ -33,12 +35,14 @@ public class AuthenticationService {
 
     @Autowired
     public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository,
-                                 TokenRepository tokenRepository, PasswordEncoder passwordEncoder,
-                                 ModelMapper modelMapper, AuthenticationManager authenticationManager,
-                                 TokenService tokenService, DaDataService daDataService) {
+                                 TokenRepository tokenRepository, PhoneRepository phoneRepository,
+                                 PasswordEncoder passwordEncoder, ModelMapper modelMapper,
+                                 AuthenticationManager authenticationManager, TokenService tokenService,
+                                 DaDataService daDataService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.tokenRepository = tokenRepository;
+        this.phoneRepository = phoneRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
         this.authenticationManager = authenticationManager;
@@ -59,8 +63,8 @@ public class AuthenticationService {
         ApplicationUser applicationUser = new ApplicationUser(username, encodedPassword, authorities);
 
         if (phone != null) {
-            phone.setUser(applicationUser);
-            applicationUser.setPhone(phone);
+            phone.setUsername(applicationUser.getUsername());
+            phoneRepository.save(phone);
         }
 
         userRepository.save(applicationUser);
@@ -86,7 +90,7 @@ public class AuthenticationService {
 
     private void saveUserToken(ApplicationUser user, String jwtToken) {
         Token token = new Token();
-        token.setUser(user);
+        token.setUsername(user.getUsername());
         token.setTokenType(TokenType.BEARER);
         token.setToken(jwtToken);
         token.setExpired(false);
@@ -95,7 +99,7 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(ApplicationUser user) {
-        List<Token> tokenList = tokenRepository.findAllValidToken(user.getId(), false);
+        List<Token> tokenList = tokenRepository.findAllValidToken(user.getUsername(), false);
 
         if (tokenList.isEmpty())
             return;

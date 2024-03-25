@@ -13,9 +13,8 @@ public class Statement {
     @Column(name = "id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
-    private ApplicationUser user;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "statement")
     private String statement;
@@ -28,6 +27,17 @@ public class Statement {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt;
 
+    public Statement() {
+    }
+
+    public Statement(Integer id, String username, String statement, StatementType statementType, Date createAt) {
+        this.id = id;
+        this.username = username;
+        this.statement = statement;
+        this.statementType = statementType;
+        this.createAt = createAt;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -36,12 +46,12 @@ public class Statement {
         this.id = id;
     }
 
-    public Integer getUser() {
-        return user.getId();
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(ApplicationUser user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getStatement() {

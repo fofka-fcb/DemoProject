@@ -11,9 +11,8 @@ public class Phone {
     @Column(name = "id")
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_of_user", referencedColumnName = "user_id")
-    private ApplicationUser user;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "type")
     private String type;
@@ -37,8 +36,9 @@ public class Phone {
         this.city_code = city_code;
     }
 
-    public Phone(Integer id, String type, String phone, Integer country_code, Integer city_code) {
+    public Phone(Integer id, String username, String type, String phone, Integer country_code, Integer city_code) {
         this.id = id;
+        this.username = username;
         this.type = type;
         this.phone = phone;
         this.country_code = country_code;
@@ -53,12 +53,12 @@ public class Phone {
         this.id = id;
     }
 
-    public Integer getUser() {
-        return user.getId();
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(ApplicationUser user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getType() {
