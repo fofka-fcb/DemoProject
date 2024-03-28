@@ -71,7 +71,7 @@ public class TokenService {
 
         ApplicationUser user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user is not valid"));
 
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), null);
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
     }
 
     public String parseToken(String token) {

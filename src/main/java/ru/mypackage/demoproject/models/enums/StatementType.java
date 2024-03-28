@@ -1,4 +1,4 @@
-package ru.mypackage.demoproject.models;
+package ru.mypackage.demoproject.models.enums;
 
 public enum StatementType {
 

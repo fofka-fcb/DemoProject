@@ -1,6 +1,7 @@
 package ru.mypackage.demoproject.models;
 
 import jakarta.persistence.*;
+import ru.mypackage.demoproject.models.enums.StatementType;
 
 import java.util.Date;
 

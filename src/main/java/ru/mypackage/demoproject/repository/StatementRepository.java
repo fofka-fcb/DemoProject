@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.mypackage.demoproject.models.Statement;
-import ru.mypackage.demoproject.models.StatementType;
+import ru.mypackage.demoproject.models.enums.StatementType;
 
 import java.util.List;
 import java.util.Optional;

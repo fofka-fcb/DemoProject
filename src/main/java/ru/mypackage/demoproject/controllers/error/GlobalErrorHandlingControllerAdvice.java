@@ -6,12 +6,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.mypackage.demoproject.dto.StatementErrorResponse;
-import ru.mypackage.demoproject.dto.UserErrorResponse;
-import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
-import ru.mypackage.demoproject.exceptions.StatementSentException;
-import ru.mypackage.demoproject.exceptions.TypeOfStatementNotValidException;
-import ru.mypackage.demoproject.exceptions.UserNotRegisterException;
+import ru.mypackage.demoproject.dto.errors.StatementErrorResponse;
+import ru.mypackage.demoproject.dto.errors.TokenErrorResponse;
+import ru.mypackage.demoproject.dto.errors.UserErrorResponse;
+import ru.mypackage.demoproject.exceptions.*;
 
 import java.util.List;
 
@@ -39,7 +37,7 @@ public class GlobalErrorHandlingControllerAdvice {
     }
 
     @ExceptionHandler(TypeOfStatementNotValidException.class)
-    ResponseEntity<StatementErrorResponse> handleTypeOfStatementNotValidException(TypeOfStatementNotValidException e) {
+    public ResponseEntity<StatementErrorResponse> handleTypeOfStatementNotValidException(TypeOfStatementNotValidException e) {
         StatementErrorResponse response = new StatementErrorResponse(
                 "You can't refactor/delete sent statements!",
                 System.currentTimeMillis()
@@ -49,7 +47,7 @@ public class GlobalErrorHandlingControllerAdvice {
     }
 
     @ExceptionHandler(StatementSentException.class)
-    ResponseEntity<StatementErrorResponse> handleStatementSentException(StatementSentException e) {
+    public ResponseEntity<StatementErrorResponse> handleStatementSentException(StatementSentException e) {
         StatementErrorResponse response = new StatementErrorResponse(
                 "This statement has already been sent!",
                 System.currentTimeMillis()
@@ -58,25 +56,35 @@ public class GlobalErrorHandlingControllerAdvice {
         return new ResponseEntity<>(response, HttpStatus.LOCKED);
     }
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<TokenErrorResponse> handleTokenExpiredException(TokenExpiredException e) {
+        TokenErrorResponse response = new TokenErrorResponse(
+                "Token is expired!",
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(UserNotRegisterException.class)
-    private ResponseEntity<UserErrorResponse> handleException(UserNotRegisterException e) {
+    public ResponseEntity<UserErrorResponse> handleException(UserNotRegisterException e) {
 
         StringBuilder exceptionMessage = new StringBuilder();
 
-            List<FieldError> errors = e.getBindingResult().getFieldErrors();
+        List<FieldError> errors = e.getBindingResult().getFieldErrors();
 
-            for (FieldError error : errors) {
-                exceptionMessage.append(error.getField())
-                        .append(" - ")
-                        .append(error.getDefaultMessage())
-                        .append("; ");
-            }
+        for (FieldError error : errors) {
+            exceptionMessage.append(error.getField())
+                    .append(" - ")
+                    .append(error.getDefaultMessage())
+                    .append("; ");
+        }
 
         UserErrorResponse response = new UserErrorResponse(
                 exceptionMessage.toString(),
                 System.currentTimeMillis()
         );
 
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 }

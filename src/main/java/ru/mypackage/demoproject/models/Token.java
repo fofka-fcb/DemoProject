@@ -2,6 +2,7 @@ package ru.mypackage.demoproject.models;
 
 
 import jakarta.persistence.*;
+import ru.mypackage.demoproject.models.enums.TokenType;
 
 @Entity
 @Table(name = "token")

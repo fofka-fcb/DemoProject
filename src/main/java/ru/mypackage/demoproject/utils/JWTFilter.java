@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import ru.mypackage.demoproject.exceptions.TokenExpiredException;
 import ru.mypackage.demoproject.repository.TokenRepository;
 import ru.mypackage.demoproject.services.TokenService;
@@ -21,11 +22,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Autowired
-    public JWTFilter(TokenService tokenService, TokenRepository tokenRepository) {
+    public JWTFilter(TokenService tokenService, TokenRepository tokenRepository,
+                     HandlerExceptionResolver handlerExceptionResolver) {
         this.tokenService = tokenService;
         this.tokenRepository = tokenRepository;
+        this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
@@ -44,18 +48,22 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        try {
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 
-            String token = authorizationHeader.substring(7);
-            Boolean validToken = tokenRepository.findByToken(token).map(t -> !t.getExpired()).orElse(false);
+                String token = authorizationHeader.substring(7);
+                Boolean validToken = tokenRepository.findByToken(token).map(t -> !t.getExpired()).orElse(false);
 
-            if (validToken) {
-                SecurityContextHolder.getContext().setAuthentication(tokenService.validateToken(token));
-            } else {
-                SecurityContextHolder.clearContext();
-                throw new TokenExpiredException("Token expired.", HttpStatus.UNAUTHORIZED);
+                if (validToken) {
+                    SecurityContextHolder.getContext().setAuthentication(tokenService.validateToken(token));
+                } else {
+                    SecurityContextHolder.clearContext();
+                    throw new TokenExpiredException("Token expired.", HttpStatus.UNAUTHORIZED);
+                }
+
             }
-
+        } catch (TokenExpiredException e) {
+            handlerExceptionResolver.resolveException(request, response, null, e);
         }
 
         filterChain.doFilter(request, response);

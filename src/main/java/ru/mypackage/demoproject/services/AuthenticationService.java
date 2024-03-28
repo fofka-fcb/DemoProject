@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.LoginResponseDTO;
 import ru.mypackage.demoproject.dto.RegisterResponseDTO;
 import ru.mypackage.demoproject.models.*;
+import ru.mypackage.demoproject.models.enums.TokenType;
 import ru.mypackage.demoproject.repository.PhoneRepository;
 import ru.mypackage.demoproject.repository.RoleRepository;
 import ru.mypackage.demoproject.repository.TokenRepository;

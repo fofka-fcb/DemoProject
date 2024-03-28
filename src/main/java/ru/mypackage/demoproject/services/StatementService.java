@@ -10,7 +10,7 @@ import ru.mypackage.demoproject.exceptions.StatementNotFoundException;
 import ru.mypackage.demoproject.exceptions.StatementSentException;
 import ru.mypackage.demoproject.exceptions.TypeOfStatementNotValidException;
 import ru.mypackage.demoproject.models.Statement;
-import ru.mypackage.demoproject.models.StatementType;
+import ru.mypackage.demoproject.models.enums.StatementType;
 import ru.mypackage.demoproject.repository.StatementRepository;
 
 import java.util.Date;
