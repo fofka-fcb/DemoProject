@@ -4,6 +4,7 @@
 * Spring Boot 3.0 (Security, Oauth2, Data, Web, Validation)
 * Spring Cloud (OpenFeign)
 * JSON Web Tokens (JWT)
+* OpenApi
 * Postgres
 * Liquibase
 * Maven
@@ -15,6 +16,10 @@
 * Запустить приложение через среду разработки
 
 -> приложение будет работать по адресу http://localhost:9000
+<br>
+-> адрес swagger (/swagger-ui/index.html#/)
+<br>
+-> адрес документации api-docs (json) (/v3/api-docs)
 
 ## Заранее зарегестрированные пользователи:
 * Роль пользователя: Администратор (Login: admin, Password: password)
