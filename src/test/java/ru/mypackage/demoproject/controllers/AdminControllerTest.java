@@ -35,9 +35,6 @@ public class AdminControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private JWTFilter jwtFilter;
 

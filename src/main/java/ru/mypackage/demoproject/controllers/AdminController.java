@@ -23,6 +23,7 @@ import ru.mypackage.demoproject.services.UserService;
 @Tag(name = "Admin controller", description = "Контроллер для пользователя с ролью 'ADMIN' ")
 public class AdminController {
 
+
     private final UserService userService;
     private final StatementService statementService;
 
