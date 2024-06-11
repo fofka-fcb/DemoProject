@@ -1,4 +1,4 @@
-package ru.mypackage.demoproject.services;
+package ru.mypackage.demoproject.services.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,12 +12,12 @@ import ru.mypackage.demoproject.models.Token;
 import ru.mypackage.demoproject.repository.TokenRepository;
 
 @Service
-public class LogoutService implements LogoutHandler {
+public class LogoutServiceImpl implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
 
     @Autowired
-    public LogoutService(TokenRepository tokenRepository) {
+    public LogoutServiceImpl(TokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
     }
 

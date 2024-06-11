@@ -17,17 +17,17 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.mypackage.demoproject.services.LogoutService;
+import ru.mypackage.demoproject.services.impl.LogoutServiceImpl;
 import ru.mypackage.demoproject.utils.JWTFilter;
 
 @Configuration
 public class SecurityConfiguration {
 
     private final JWTFilter jwtFilter;
-    private final LogoutService logoutHandler;
+    private final LogoutServiceImpl logoutHandler;
 
     @Autowired
-    public SecurityConfiguration(JWTFilter jwtFilter, LogoutService logoutHandler) {
+    public SecurityConfiguration(JWTFilter jwtFilter, LogoutServiceImpl logoutHandler) {
         this.jwtFilter = jwtFilter;
         this.logoutHandler = logoutHandler;
     }
