@@ -20,7 +20,7 @@ import java.io.IOException;
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService;
+    private  final TokenService tokenService;
     private final TokenRepository tokenRepository;
     private final HandlerExceptionResolver handlerExceptionResolver;
 
