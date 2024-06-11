@@ -39,10 +39,10 @@ public class AuthenticationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    AuthenticationService authenticationService;
+    private AuthenticationService authenticationService;
 
     @MockBean
-    UserValidator userValidator;
+    private UserValidator userValidator;
 
     @MockBean
     private JWTFilter jwtFilter;
