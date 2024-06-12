@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.mypackage.demoproject.dto.StatementsResponseDTO;
+import ru.mypackage.demoproject.dto.responses.StatementsResponseDTO;
 import ru.mypackage.demoproject.dto.errors.TokenErrorResponse;
 import ru.mypackage.demoproject.dto.errors.UserErrorResponse;
-import ru.mypackage.demoproject.dto.UsersResponseDTO;
+import ru.mypackage.demoproject.dto.responses.UsersResponseDTO;
 import ru.mypackage.demoproject.services.StatementService;
 import ru.mypackage.demoproject.services.UserService;
 

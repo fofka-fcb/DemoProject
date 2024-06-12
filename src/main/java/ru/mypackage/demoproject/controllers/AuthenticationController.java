@@ -11,6 +11,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.mypackage.demoproject.dto.*;
 import ru.mypackage.demoproject.dto.errors.UserErrorResponse;
+import ru.mypackage.demoproject.dto.responses.LoginResponseDTO;
+import ru.mypackage.demoproject.dto.responses.RegisterResponseDTO;
 import ru.mypackage.demoproject.exceptions.UserNotRegisterException;
 import ru.mypackage.demoproject.services.AuthenticationService;
 import ru.mypackage.demoproject.utils.UserValidator;

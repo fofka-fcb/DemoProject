@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.mypackage.demoproject.dto.*;
 import ru.mypackage.demoproject.dto.errors.StatementErrorResponse;
 import ru.mypackage.demoproject.dto.errors.TokenErrorResponse;
+import ru.mypackage.demoproject.dto.responses.StatementsResponseDTO;
 import ru.mypackage.demoproject.models.Statement;
 import ru.mypackage.demoproject.models.enums.StatementType;
 import ru.mypackage.demoproject.services.StatementService;

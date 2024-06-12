@@ -1,7 +1,7 @@
 package ru.mypackage.demoproject.services;
 
-import ru.mypackage.demoproject.dto.LoginResponseDTO;
-import ru.mypackage.demoproject.dto.RegisterResponseDTO;
+import ru.mypackage.demoproject.dto.responses.LoginResponseDTO;
+import ru.mypackage.demoproject.dto.responses.RegisterResponseDTO;
 
 public interface AuthenticationService {
 
