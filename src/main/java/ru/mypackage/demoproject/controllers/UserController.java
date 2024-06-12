@@ -88,7 +88,9 @@ public class UserController {
                 statementService.findAllStatementsByUserAndStatementType(
                         username,
                         type,
-                        page, sortByDesc)
+                        page,
+                        sortByDesc
+                )
         );
 
         return new ResponseEntity<>(statementsResponseDTO, HttpStatus.OK);
@@ -138,8 +140,7 @@ public class UserController {
     ) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        statementService
-                .create(username, StatementType.SENT, body.getStatement());
+        statementService.create(username, StatementType.SENT, body.getStatement());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -164,8 +165,7 @@ public class UserController {
     ) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        statementService
-                .create(username, StatementType.DRAFT, body.getStatement());
+        statementService.create(username, StatementType.DRAFT, body.getStatement());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
