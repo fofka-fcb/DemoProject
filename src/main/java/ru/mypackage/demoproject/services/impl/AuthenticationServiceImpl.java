@@ -1,24 +1,16 @@
 package ru.mypackage.demoproject.services.impl;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mypackage.demoproject.dto.responses.LoginResponseDTO;
 import ru.mypackage.demoproject.dto.responses.RegisterResponseDTO;
 import ru.mypackage.demoproject.models.*;
 import ru.mypackage.demoproject.models.enums.TokenType;
-import ru.mypackage.demoproject.repository.PhoneRepository;
-import ru.mypackage.demoproject.repository.RoleRepository;
-import ru.mypackage.demoproject.repository.TokenRepository;
-import ru.mypackage.demoproject.repository.UserRepository;
 import ru.mypackage.demoproject.services.AuthenticationService;
-import ru.mypackage.demoproject.services.DaDataService;
-import ru.mypackage.demoproject.services.TokenService;
+import ru.mypackage.demoproject.services.impl.init.InitAuthService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,63 +19,43 @@ import java.util.Set;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final TokenRepository tokenRepository;
-    private final PhoneRepository phoneRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ModelMapper modelMapper;
-    private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
-    private final DaDataService daDataService;
+    private final InitAuthService initAuthService;
 
     @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
-                                     TokenRepository tokenRepository, PhoneRepository phoneRepository,
-                                     PasswordEncoder passwordEncoder, ModelMapper modelMapper,
-                                     AuthenticationManager authenticationManager, TokenService tokenService,
-                                     DaDataService daDataService) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.tokenRepository = tokenRepository;
-        this.phoneRepository = phoneRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.modelMapper = modelMapper;
-        this.authenticationManager = authenticationManager;
-        this.tokenService = tokenService;
-        this.daDataService = daDataService;
+    public AuthenticationServiceImpl(InitAuthService initAuthService) {
+        this.initAuthService = initAuthService;
     }
 
     @Transactional
     public RegisterResponseDTO registerUser(String username, String password, String phoneNumber) {
-        String encodedPassword = passwordEncoder.encode(password);
-        Role userRole = roleRepository.findByAuthority("USER").get();
+        String encodedPassword = initAuthService.getPasswordEncoder().encode(password);
+        Role userRole = initAuthService.getRoleRepository().findByAuthority("USER").get();
 
         Set<Role> authorities = new HashSet<>();
         authorities.add(userRole);
 
-        Phone phone = daDataService.checkPhone(phoneNumber);
+        Phone phone = initAuthService.getDaDataService().checkPhone(phoneNumber);
 
         ApplicationUser applicationUser = new ApplicationUser(username, encodedPassword, authorities);
 
         if (phone != null) {
             phone.setUsername(applicationUser.getUsername());
-            phoneRepository.save(phone);
+            initAuthService.getPhoneRepository().save(phone);
         }
 
-        userRepository.save(applicationUser);
+        initAuthService.getUserRepository().save(applicationUser);
 
         return convertToRegisterResponseDTO(applicationUser);
     }
 
     @Transactional
     public LoginResponseDTO loginUser(String username, String password) {
-        Authentication auth = authenticationManager.authenticate(
+        Authentication auth = initAuthService.getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
         ApplicationUser user = (ApplicationUser) auth.getPrincipal();
-        String access_token = tokenService.generateAccessToken(user);
+        String access_token = initAuthService.getTokenService().generateAccessToken(user);
 
         revokeAllUserTokens(user);
         saveUserToken(user, access_token);
@@ -99,11 +71,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         token.setToken(jwtToken);
         token.setExpired(false);
 
-        tokenRepository.save(token);
+        initAuthService.getTokenRepository().save(token);
     }
 
     protected void revokeAllUserTokens(ApplicationUser user) {
-        List<Token> tokenList = tokenRepository.findAllValidToken(user.getUsername(), false);
+        List<Token> tokenList = initAuthService.getTokenRepository().findAllValidToken(user.getUsername(), false);
 
         if (tokenList.isEmpty())
             return;
@@ -112,15 +84,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             token.setExpired(true);
         }
 
-        tokenRepository.saveAllAndFlush(tokenList);
+        initAuthService.getTokenRepository().saveAllAndFlush(tokenList);
     }
 
     private RegisterResponseDTO convertToRegisterResponseDTO(ApplicationUser user) {
-        return modelMapper.map(user, RegisterResponseDTO.class);
+        return initAuthService.getModelMapper().map(user, RegisterResponseDTO.class);
     }
 
     private ApplicationUser convertToApplicationUser(RegisterResponseDTO reg) {
-        return modelMapper.map(reg, ApplicationUser.class);
+        return initAuthService.getModelMapper().map(reg, ApplicationUser.class);
     }
 
 }
